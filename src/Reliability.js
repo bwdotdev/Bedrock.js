@@ -1,0 +1,9 @@
+"use strict"
+
+module.exports = {
+  UNRELIABLE: 0,
+  UNRELIABLE_SEQUENCED: 1,
+  RELIABLE: 2,
+  RELIABLE_ORDERED: 3,
+  RELIABLE_SEQUENCED: 4
+}
