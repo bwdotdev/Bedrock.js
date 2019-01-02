@@ -100,7 +100,7 @@ class Server extends EventEmitter {
   }
 
   send(bitStream, to) {
-    console.log('sending to', to)
+    // console.log('sending to', to)
     this.server.send(
       bitStream.buffer,
       to.port,

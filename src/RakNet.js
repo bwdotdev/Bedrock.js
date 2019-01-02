@@ -20,6 +20,9 @@ class RakNet {
       case Protocol.OPEN_CONNECTION_REQUEST_1:
         this.handleOpenConnectionRequestOne(stream, recipient)
         break;
+      case Protocol.OPEN_CONNECTION_REQUEST_2:
+        this.handleOpenConnectionRequestTwo(stream, recipient)
+        break;
       default:
         console.log('Unknown packet:', id)
     }
@@ -42,6 +45,13 @@ class RakNet {
       const packet = new Packets.OpenConnectionReplyOne(req.mtuSize)
       this.server.send(packet.encode(), recipient)
     }
+  }
+
+  handleOpenConnectionRequestTwo(stream, recipient) {
+    const req = new Packets.OpenConnectionRequestTwo(stream)
+
+    const packet = new Packets.OpenConnectionReplyTwo(req.port, req.mtuSize)
+    this.server.send(packet.encode(), recipient)
   }
 
 }
