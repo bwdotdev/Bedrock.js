@@ -1,23 +1,24 @@
 const ByteBuffer = require('bytebuffer')
+const Protocol = require('../Protocol')
 
 class OpenConnectionReplyOne {
 
-  constructor(pingId, name, maxPlayers) {
-    this.pingId = pingId
-    this.name = name
-    this.maxPlayers = maxPlayers
+  constructor(mtuSize) {
+    this.mtuSize = mtuSize
     this.byteBuffer = new ByteBuffer()
   }
 
   encode() {
-    const name = `MCPE;${this.name};27;1.8.0;0;${this.maxPlayers};0;FunoNetwork`
     return this.byteBuffer
-      .writeByte(Protocol.UNCONNECTED_PONG)
-      .writeLong(this.pingId)
-      .writeLong(Protocol.SERVER_ID)
+      .writeByte(Protocol.OPEN_CONNECTION_REPLY_1)
       .append(Protocol.MAGIC, "hex")
-      .writeShort(name.length)
-      .writeString(name)
+      .writeLong(Protocol.SERVER_ID)
+      .writeByte(0)
+      .writeShort(this.mtuSize)
+      .flip()
+      .compact()
   }
 
 }
+
+module.exports = OpenConnectionReplyOne

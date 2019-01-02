@@ -1,7 +1,7 @@
 "use strict"
 
 module.exports = {
-  PROTOCOL_VERSION: 8,
+  PROTOCOL_VERSION: 9,
   SERVER_ID: 925686942,
   MAGIC: "00ffff00fefefefefdfdfdfd12345678",
 

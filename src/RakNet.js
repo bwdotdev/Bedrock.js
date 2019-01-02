@@ -39,7 +39,8 @@ class RakNet {
       const packet = new Packets.IncompatibleProtocol()
       this.server.send(packet.encode(), recipient)
     } else {
-      console.log('same proto')
+      const packet = new Packets.OpenConnectionReplyOne(req.mtuSize)
+      this.server.send(packet.encode(), recipient)
     }
   }
 
