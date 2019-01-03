@@ -1,5 +1,4 @@
-const BitStream = require("./utils/BitStream")
-const ReliabilityLayer = require("./ReliabilityLayer")
+const Client = require("./Client")
 const Protocol = require("./Protocol")
 
 const Packets = require('./packets')
@@ -51,7 +50,11 @@ class RakNet {
     const req = new Packets.OpenConnectionRequestTwo(stream)
 
     const packet = new Packets.OpenConnectionReplyTwo(req.port, req.mtuSize)
-    this.server.send(packet.encode(), recipient)
+    if(!this.server.hasClient(recipient.address, recipient.port)) {
+      const client = new Client(recipient.address, recipient.port, req.mtuSize)
+      this.server.addClient(client)
+      this.server.send(packet.encode(), recipient)
+    }
   }
 
 }

@@ -1,6 +1,3 @@
-"use strict"
-
-const BitStream = require("./utils/BitStream")
 const ByteBuffer = require("bytebuffer")
 const ReliabilityLayer = require("./ReliabilityLayer")
 const Messages = require("./Protocol")
@@ -95,8 +92,17 @@ class Server extends EventEmitter {
     }
   }
 
-  getClientByIP(ip) {
-    return this.clients[ip]
+  hasClient(ip, port) {
+    return !!this.getClient(ip, port)
+  }
+
+  getClient(ip, port) {
+    return this.clients.find(client => client.address === ip && client.port === port)
+  }
+
+  addClient(client) {
+    this.clients.push(client)
+    console.log('added client')
   }
 
   send(bitStream, to) {
