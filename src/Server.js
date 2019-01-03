@@ -1,6 +1,7 @@
 const ByteBuffer = require("bytebuffer")
 const ReliabilityLayer = require("./ReliabilityLayer")
 const Messages = require("./Protocol")
+const EncapsulatedPacket = require("./packets/EncapsulatedPacket")
 
 const EventEmitter = require("events")
 
@@ -63,29 +64,12 @@ class Server extends EventEmitter {
         )
       }
     } else {
-      if (this.clients[recipient.address] !== undefined) {
-        const packets = this.clients[recipient.address].handleData(stream)
-        let isFinished = false
+      if (this.hasClient(recipient.address, recipient.port)) {
+        const client = this.getClient(recipient.address, recipient.port)
+        const encapsulatedPacket = new EncapsulatedPacket(stream)
 
-        while (!isFinished) {
-          const next = packets.next()
-
-          if (next.value !== undefined) {
-            const packetType = next.value.readByte()
-
-            if (this.listenerCount(String(packetType)) > 0) {
-              this.emit(String(packetType), next.value, recipient)
-            } else {
-              this.logger.warn(
-                `No listener found for packet ID ${packetType}. Did you add any event listeners?`
-              )
-            }
-          }
-
-          if (next.done) {
-            isFinished = true
-          }
-        }
+        client.handlePackets(encapsulatedPacket)
+        // process.exit()
       } else {
         this.raknet.handleUnconnectedPacket(stream, recipient)
       }
@@ -106,7 +90,7 @@ class Server extends EventEmitter {
   }
 
   send(bitStream, to) {
-    // console.log('sending to', to)
+    console.log('sending to', to.address)
     this.server.send(
       bitStream.buffer,
       to.port,

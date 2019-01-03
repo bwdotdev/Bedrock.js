@@ -51,7 +51,7 @@ class RakNet {
 
     const packet = new Packets.OpenConnectionReplyTwo(req.port, req.mtuSize)
     if(!this.server.hasClient(recipient.address, recipient.port)) {
-      const client = new Client(recipient.address, recipient.port, req.mtuSize)
+      const client = new Client(recipient.address, recipient.port, req.mtuSize, this.server)
       this.server.addClient(client)
       this.server.send(packet.encode(), recipient)
     }
