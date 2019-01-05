@@ -41,9 +41,9 @@ class EncapsulatedPacket {
         pk.splitId = byteBuffer.readShort();
         pk.splitIndex = byteBuffer.readInt();
       }
-      pk.byteBuffer = byteBuffer.copy(byteBuffer.offset, byteBuffer.offset + length);
+      // pk.byteBuffer = byteBuffer.copy(byteBuffer.offset, byteBuffer.offset + length);
+      this.packets.push(byteBuffer.copy(byteBuffer.offset, byteBuffer.offset + length));
       byteBuffer.skip(length);
-      this.packets.push(pk);
     }
 
     byteBuffer.flip()

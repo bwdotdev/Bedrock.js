@@ -22,7 +22,7 @@ class Client {
   }
 
   tick() {
-    console.log('tick!')
+    // console.log('tick!')
     if(this.packetQueue.packets.length) {
       this.packetQueue.sequenceNumber++
       this.server.send(this.packetQueue.encode(), this)
@@ -48,23 +48,26 @@ class Client {
     packets.forEach(packet => this.handlePacket(packet))
   }
 
-  handlePacket(gamePacket) {
-    const packetId = gamePacket.byteBuffer.readByte()
+  handlePacket(byteBuffer) {
+    const packetId = byteBuffer.readByte()
     console.log('Got packet', packetId)
     
     switch(packetId) {
-      case Protocol.OPEN_CONNECTION_REQUEST:
-        this.handleOpenConnectionRequest(gamePacket)
+      case Protocol.CONNECTION_REQUEST:
+        this.handleConnectionRequest(byteBuffer)
         break;
       default:
         console.log("Game packet not yet implemented:", packetId)
     }
   }
 
-  handleOpenConnectionRequest(gamePacket) {
-    const packet = new GamePackets.OpenConnectionRequest(gamePacket.byteBuffer.copy())
-    const reply = new GamePackets.OpenConnectionReply(this.port, packet.session)
-    this.sendPacket(reply)
+  handleConnectionRequest(byteBuffer) {
+    const packet = new GamePackets.ConnectionRequest(byteBuffer)
+    console.log(packet.cid.toString())
+    console.log(packet.time.toString(), new Date().getTime())
+    // process.exit()
+    // const reply = new GamePackets.ConnectionRequestAccepted(this.port, packet.time, this.address)
+    // this.sendPacket(reply)
   }
 
 }
