@@ -5,6 +5,11 @@ const Protocol = require('../Protocol')
 class EncapsulatedPacket {
 
   constructor(byteBuffer) {
+    this.RELIABILITY_SHIFT = 5
+    this.RELIABILITY_FLAGS = 0b111 << EncapsulatedPacket.RELIABILITY_SHIFT
+
+    this.SPLIT_FLAG = 0b00010000
+
     if (byteBuffer instanceof ByteBuffer) {
       this.packets = []
       this.id = byteBuffer.readByte()
@@ -26,7 +31,8 @@ class EncapsulatedPacket {
       const flag = byteBuffer.readByte()
       pk.reliability = (flag >> 5)
       pk.hasSplit = (flag & 16) === 16
-      const length = ((byteBuffer.readShort() + 7) >> 3)
+      const length = byteBuffer.readUint16() / 8
+
       if (pk.reliability == 2 || pk.reliability == 3 || pk.reliability == 4 || pk.reliability == 6 || pk.reliability == 7) {
         pk.messageIndex = EncapsulatedPacket.readLTriad(byteBuffer.buffer, byteBuffer.offset);
         byteBuffer.skip(3);
@@ -45,8 +51,6 @@ class EncapsulatedPacket {
       this.packets.push(byteBuffer.copy(byteBuffer.offset, byteBuffer.offset + length));
       byteBuffer.skip(length);
     }
-
-    byteBuffer.flip()
   }
 
   encode() {
@@ -102,6 +106,15 @@ class EncapsulatedPacket {
     const buf = new ByteBuffer();
     buf.writeUint32(data);
     return buf.copy(1, 4);
+  }
+
+  static writeAddress(byteBuffer, addr, port) {
+    byteBuffer.writeByte(4) // IPV4
+    const parts = addr.split('.')
+    parts.forEach(part => {
+      byteBuffer.writeByte(~part & 0xff)
+    })
+    if(port) byteBuffer.writeShort(port)
   }
 
 }

@@ -1,15 +1,17 @@
+const Long = require('long')
+const ByteBuffer = require('bytebuffer')
+
+const EncapsulatedPacket = require('../packets/EncapsulatedPacket')
+
 class ConnectionRequest {
 
   constructor(byteBuffer) {
     byteBuffer.reset()
-    byteBuffer.skip(2)
-    console.log(byteBuffer.buffer)
-    console.log('offset', byteBuffer.buffer[0], byteBuffer.offset)
+    byteBuffer.skip(1)
+    
     this.cid = byteBuffer.readLong()
-    // this.session = byteBuffer.readLong()
-    // this.unknown = byteBuffer.readByte()
     this.time = byteBuffer.readLong()
-    // this.securityEnabled = byteBuffer.readByte() !== 0x00
+    this.hasSecurity = byteBuffer.readByte() !== 0x00
   }
 
 }

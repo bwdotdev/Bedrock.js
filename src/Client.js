@@ -24,6 +24,7 @@ class Client {
   tick() {
     // console.log('tick!')
     if(this.packetQueue.packets.length) {
+      console.log('Sending', this.packetQueue.packets.length, 'packets')
       this.packetQueue.sequenceNumber++
       this.server.send(this.packetQueue.encode(), this)
       this.packetQueue.packets = []
@@ -63,11 +64,11 @@ class Client {
 
   handleConnectionRequest(byteBuffer) {
     const packet = new GamePackets.ConnectionRequest(byteBuffer)
-    console.log(packet.cid.toString())
-    console.log(packet.time.toString(), new Date().getTime())
+    // console.log(packet.cid.toString())
+    // console.log(packet.time.toString(), new Date().getTime())
     // process.exit()
-    // const reply = new GamePackets.ConnectionRequestAccepted(this.port, packet.time, this.address)
-    // this.sendPacket(reply)
+    const reply = new GamePackets.ConnectionRequestAccepted(this.port, + new Date(), this.address)
+    this.sendPacket(reply)
   }
 
 }

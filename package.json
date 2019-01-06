@@ -7,6 +7,7 @@
     "start": "nodemon -w --exec node app.js"
   },
   "dependencies": {
-    "bytebuffer": "^5.0.1"
+    "bytebuffer": "^5.0.1",
+    "uint64be": "^2.0.2"
   }
 }

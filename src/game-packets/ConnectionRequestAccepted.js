@@ -14,13 +14,18 @@ class ConnectionRequestAccepted {
 
   encode() {
     const byteBuffer = new ByteBuffer()
+    byteBuffer.writeByte(Protocol.CONNECTION_REQUEST_ACCEPTED)
+    EncapsulatedPacket.writeAddress(byteBuffer, this.address, this.port)
+    byteBuffer.writeShort(0)
+
+    EncapsulatedPacket.writeAddress(byteBuffer, '127.0.0.1', 0)
+    for(let i = 0; i < 19; i++) {
+      EncapsulatedPacket.writeAddress(byteBuffer, '0.0.0.0', 0)
+    }
+
     return byteBuffer
-      .writeByte(Protocol.CONNECTION_REQUEST_ACCEPTED)
-      .writeByte(4) // IPV4
-      .writeLong(this.address)
-      .writeShort(this.port)
       .writeLong(this.time)
-      .writeLong(new Date().getMilliseconds())
+      .writeLong(+ new Date())
   }
 
   encodeoff() {
