@@ -15,6 +15,8 @@ class Server extends EventEmitter {
     this.name = 'Sky Wars'
     this.maxPlayers = 50
 
+    this.startTime = Date.now()
+
     this.raknet = new (require('./RakNet'))(this)
 
     this.clients = []

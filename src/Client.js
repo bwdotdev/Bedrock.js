@@ -67,7 +67,8 @@ class Client {
     // console.log(packet.cid.toString())
     // console.log(packet.time.toString(), new Date().getTime())
     // process.exit()
-    const reply = new GamePackets.ConnectionRequestAccepted(this.port, + new Date(), this.address)
+    const time = Date.now() - this.server.startTime
+    const reply = new GamePackets.ConnectionRequestAccepted(this.port, time, time, this.address)
     this.sendPacket(reply)
   }
 

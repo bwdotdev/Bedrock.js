@@ -68,7 +68,7 @@ class EncapsulatedPacket {
 
         const packetBuffer = packet.encode()
 
-        byteBuffer.writeByte((packet.reliability << 5) ^ (packet.hasSplit ? true : 0x00))
+        byteBuffer.writeByte((packet.reliability << 5) | (packet.hasSplit ? 0x10 : 0x00))
         byteBuffer.writeShort(packetBuffer.limit << 3)
 
         if([2, 3, 4, 6, 7].includes(packet.reliability)) {
@@ -112,7 +112,7 @@ class EncapsulatedPacket {
     byteBuffer.writeByte(4) // IPV4
     const parts = addr.split('.')
     parts.forEach(part => {
-      byteBuffer.writeByte(~part & 0xff)
+      byteBuffer.writeByte(parseInt(part) & 0xff)
     })
     if(port) byteBuffer.writeShort(port)
   }

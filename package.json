@@ -9,5 +9,8 @@
   "dependencies": {
     "bytebuffer": "^5.0.1",
     "uint64be": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^10.12.18"
   }
 }
