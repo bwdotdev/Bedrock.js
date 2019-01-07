@@ -1,8 +1,8 @@
-import Packet from "@/Packet";
 import Protocol from "@/Protocol";
 import { Address, AddressFamily } from "@/utils";
+import EncapsulatedPacket from "./EncapsulatedPacket";
 
-export default class ConnectionRequestAccepted extends Packet {
+export default class ConnectionRequestAccepted extends EncapsulatedPacket {
 
   public address: Address
   public systemAddresses: Address[]

@@ -83,11 +83,11 @@ export default class BinaryStream {
     return buf
   }
 
-  readBool(): Boolean {
+  readBool(): boolean {
     return this.readByte() !== 0x00
   }
 
-  writeBool(v: Boolean): this {
+  writeBool(v: boolean): this {
     this.writeByte(v === true ? 1 : 0)
     return this
   }
