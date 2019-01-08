@@ -117,7 +117,7 @@ export default class Server extends EventEmitter {
   }
 
   send(stream: BinaryStream, to: Address) {
-    console.log('sending to', to.ip)
+    console.log('sending to', to.ip, stream.buffer.length)
     this.socket.send(
       stream.buffer,
       to.port,

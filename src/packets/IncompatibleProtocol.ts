@@ -7,7 +7,7 @@ export default class IncompatibleProtocol extends Packet {
     super(Protocol.INCOMPATIBLE_PROTOCOL)
   }
 
-  encode() {
+  protected encodeBody() {
     return this.getStream()
       .writeByte(Protocol.PROTOCOL_VERSION)
       .writeMagic()
