@@ -1,6 +1,7 @@
 import Packet from "@/Packet";
 import Protocol from "@/Protocol";
 import EncapsulatedPacket from "./EncapsulatedPacket";
+import { BinaryStream } from "@/utils";
 
 export default class Datagram extends Packet {
 
@@ -10,6 +11,10 @@ export default class Datagram extends Packet {
     super(id)
 
     this.packets = packets
+  }
+
+  static fromBinary(stream: BinaryStream) {
+    return new Datagram([], stream.readByte())
   }
 
 }
