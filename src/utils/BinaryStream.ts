@@ -1,4 +1,5 @@
 import { Address, Round, AddressFamily } from '@/utils'
+import Protocol from '@/Protocol';
 
 export default class BinaryStream {
   
@@ -400,6 +401,15 @@ export default class BinaryStream {
 
   writeString(v: string): this {
     this.append(Buffer.from(v, "utf8"))
+    return this
+  }
+
+  readMagic(): Buffer {
+    return this.buffer.slice(this.offset, this.increaseOffset(16, true))
+  }
+
+  writeMagic() {
+    this.append(Buffer.from(Protocol.MAGIC, 'binary'))
     return this
   }
 

@@ -7,6 +7,8 @@ export default class Datagram extends Packet {
 
   public packets: EncapsulatedPacket[]
 
+  public sequenceNumber: number = 0
+
   constructor(packets: EncapsulatedPacket[] = [], id: number = Protocol.DATA_PACKET_4) {
     super(id)
 

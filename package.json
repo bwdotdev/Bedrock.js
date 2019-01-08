@@ -4,13 +4,17 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon -w --exec node app.js"
+    "start": "node ./node_modules/nodemon/bin/nodemon.js --watch 'src/**/*.ts' --exec node ./node_modules/ts-node/dist/bin.js -r tsconfig-paths/register app.ts"
   },
   "dependencies": {
     "bytebuffer": "^5.0.1",
     "uint64be": "^2.0.2"
   },
   "devDependencies": {
-    "@types/node": "^10.12.18"
+    "@types/node": "^10.12.18",
+    "nodemon": "^1.18.9",
+    "ts-node": "^7.0.1",
+    "tsconfig-paths": "^3.7.0",
+    "typescript": "^3.2.2"
   }
 }

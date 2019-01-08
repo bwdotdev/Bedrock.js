@@ -1,8 +1,10 @@
 import dgram from 'dgram'
 import { EventEmitter } from 'events'
 
-import { Address, BinaryStream } from './utils'
-import Datagram from './packets/Datagram';
+import { Address, BinaryStream } from '@/utils'
+import Datagram from '@/packets/Datagram';
+import RakNet from '@/RakNet';
+import Client from '@/Client';
 
 export default class Server extends EventEmitter {
 
@@ -18,7 +20,8 @@ export default class Server extends EventEmitter {
 
   private socket: dgram.Socket
 
-  private logger: Logger
+  private logger: any
+  // private logger: Logger
 
   constructor(ip: string = "127.0.0.1", port: number = 19132) {
     super()
@@ -30,15 +33,24 @@ export default class Server extends EventEmitter {
 
     this.startTime = Date.now()
 
-    this.raknet = new (require('./RakNet'))(this)
+    this.raknet = new RakNet(this)
 
     this.clients = []
 
     this.socket = dgram.createSocket("udp4")
-    this.logger = require("./utils/Logger")
+    // this.logger = require("./utils/Logger")
+    this.logger = console
 
     this.startListeners()
     this.socket.bind(this.port, this.ip)
+  }
+
+  public getName() {
+    return this.name
+  }
+
+  public getMaxPlayers() {
+    return this.maxPlayers
   }
 
   startListeners() {
@@ -84,7 +96,7 @@ export default class Server extends EventEmitter {
         const client = this.getClient(recipient)
         const datagram = Datagram.fromBinary(stream)
 
-        client.handlePackets(datagram)
+        if(client) client.handlePackets(datagram)
         // process.exit()
       } else {
         this.raknet.handleUnconnectedPacket(stream, recipient)

@@ -16,6 +16,10 @@ export default class Packet {
     }
   }
 
+  public getId(): number {
+    return this.id
+  }
+
   public encode(): BinaryStream {
     this.stream.writeByte(this.id)
     this.encodeBody()
