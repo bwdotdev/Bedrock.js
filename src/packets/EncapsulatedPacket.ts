@@ -58,9 +58,9 @@ export default class EncapsulatedPacket extends Packet {
   }
 
   static fromBinary(stream: BinaryStream) {
-    const packet = new EncapsulatedPacket(Protocol.DATA_PACKET_4)
-
     const flags = stream.readByte()
+    const packet = new EncapsulatedPacket(flags)
+
     packet.reliability = ((flags & 0xe0) >> 5)
     packet.hasSplit = (flags & 0x10) > 0
 
@@ -81,9 +81,6 @@ export default class EncapsulatedPacket extends Packet {
       packet.splitIndex = stream.readInt()
     }
 
-    // stream.increaseOffset(2)
-
-    console.log('offset', stream.offset, packet.length)
     packet.setStream(new BinaryStream(stream.buffer.slice(stream.offset, stream.offset + packet.length)), true)
     stream.offset += packet.length
 

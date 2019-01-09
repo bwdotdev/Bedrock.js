@@ -4,6 +4,7 @@ import Datagram from "@/packets/Datagram";
 import EncapsulatedPacket from "@/packets/EncapsulatedPacket";
 import Protocol from "@/Protocol";
 import ConnectionRequest from "./packets/ConnectionRequest";
+import ConnectionRequestAccepted from "./packets/ConnectionRequestAccepted";
 
 export default class Client {
 
@@ -75,14 +76,14 @@ export default class Client {
     console.log('HANDLE CONNECTION REQUEST')
     const request = ConnectionRequest.fromEncapsulated(packet)
     console.log(request.clientId)
-    console.log(request.sendPingTime)
+    console.log(request.sendPingTime, new Date().getTime())
     console.log(request.hasSecurity)
     // console.log(packet.time.toString(), new Date().getTime())
     // process.exit()
 
     // const time = Date.now() - this.server.startTime
-    // const reply = new GamePackets.ConnectionRequestAccepted(this.port, time, time, this.address)
-    // this.sendPacket(reply)
+    const reply = new ConnectionRequestAccepted(this.address, request.sendPingTime, this.server.getTime())
+    this.sendPacket(reply)
   }
 
 }

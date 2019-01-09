@@ -5,6 +5,7 @@ import { Address, BinaryStream } from '@/utils'
 import Datagram from '@/packets/Datagram';
 import RakNet from '@/RakNet';
 import Client from '@/Client';
+import BitFlag from './utils/BitFlag';
 
 export default class Server extends EventEmitter {
 
@@ -53,8 +54,14 @@ export default class Server extends EventEmitter {
     return this.maxPlayers
   }
 
+  public getTime() {
+    return Date.now() - this.startTime
+  }
+
   startListeners() {
     this.socket.on("message", (message: Buffer, recipient: dgram.RemoteInfo) => {
+      if (!message.length) return
+
       const stream = new BinaryStream(message)
 
       try {
@@ -79,29 +86,27 @@ export default class Server extends EventEmitter {
   }
 
   handleOnMessage(stream: BinaryStream, recipient: Address) {
-    // if (stream.length === 2) {
-    //   if (stream.readByte() === Messages.ID_OPEN_CONNECTION_REQUEST) {
-    //     this.logger.info(`${recipient.address}:${recipient.port} has connected`)
+    const packetId = stream.buffer[0]
+    if (this.hasClient(recipient)) {
+      if ((packetId & BitFlag.Valid) === 0) {
+        console.log('Ignored', packetId)
+        return
+      }
 
-    //     this.clients[recipient.address] = new ReliabilityLayer(this.server, recipient)
+      const client = this.getClient(recipient)
 
-    //     this.server.send(
-    //       Buffer.from([Messages.ID_OPEN_CONNECTION_REPLY]),
-    //       recipient.port,
-    //       recipient.address
-    //     )
-    //   }
-    // } else {
-      if (this.hasClient(recipient)) {
-        const client = this.getClient(recipient)
+      if (packetId & BitFlag.ACK) {
+        console.log('ACK', packetId)
+      } else if (packetId & BitFlag.NAK) {
+        console.log('NAK', packetId)
+      } else {
         const datagram = Datagram.fromBinary(stream)
 
-        if(client) client.handlePackets(datagram)
-        // process.exit()
-      } else {
-        this.raknet.handleUnconnectedPacket(stream, recipient)
+        if (client) client.handlePackets(datagram)
       }
-    // }
+    } else {
+      this.raknet.handleUnconnectedPacket(stream, recipient)
+    }
   }
 
   hasClient(address: Address) {

@@ -14,6 +14,7 @@ export default class ConnectionRequest extends EncapsulatedPacket {
     this.clientId = this.getStream().readLong()
     this.sendPingTime = this.getStream().readLong()
     this.hasSecurity = this.getStream().readBool()
+    console.log(this.getStream().offset, this.getStream().buffer.length)
   }
 
 }
