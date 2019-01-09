@@ -20,6 +20,12 @@ export default class Packet {
     return this.id
   }
 
+  public setStream(stream: BinaryStream, updatePacketId: boolean = false) {
+    this.stream = stream
+
+    if(updatePacketId) this.id = this.getStream().buffer[0]
+  }
+
   public encode(): BinaryStream {
     this.stream.writeByte(this.id)
     this.encodeBody()

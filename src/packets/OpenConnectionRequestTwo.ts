@@ -18,5 +18,3 @@ export default class OpenConnectionRequestTwo extends Packet {
   }
 
 }
-
-module.exports = OpenConnectionRequestTwo

@@ -109,7 +109,7 @@ export default class Server extends EventEmitter {
   }
 
   getClient(address: Address) {
-    return this.clients.find(client => client.address === address)
+    return this.clients.find(client => client.address.ip === address.ip && client.address.port === address.port)
   }
 
   addClient(client: Client) {
@@ -117,7 +117,7 @@ export default class Server extends EventEmitter {
   }
 
   send(stream: BinaryStream, to: Address) {
-    console.log('sending to', to.ip, stream.buffer.length)
+    // console.log('sending to', to.ip, stream.buffer.length)
     this.socket.send(
       stream.buffer,
       to.port,

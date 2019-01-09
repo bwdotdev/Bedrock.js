@@ -21,8 +21,6 @@ export default class UnconnectedPong extends Packet {
   protected encodeBody() {
     const name = `MCPE;${this.name};27;1.8.0;0;${this.maxPlayers};0;${this.secondaryName}`
 
-    console.log(this.pingId)
-
     return this.getStream()
       .writeLong(this.pingId)
       .writeLong(Protocol.SERVER_ID)

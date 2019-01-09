@@ -1,6 +1,7 @@
 import Packet from "@/Packet"
 import { BinaryStream } from "@/utils";
 import Reliability from "@/Reliability";
+import Protocol from "@/Protocol";
 
 export default class EncapsulatedPacket extends Packet {
 
@@ -18,31 +19,8 @@ export default class EncapsulatedPacket extends Packet {
   public orderIndex: number = 0
   public orderChannel: number = 0
 
-  constructor(packetId: number, stream?: BinaryStream) {
-    super(packetId, stream)
-
-    if (stream) {
-      const flags = stream.readByte()
-      this.reliability = ((flags & 0xe0) >> 5)
-      this.hasSplit = (flags & 0x10) > 0
-
-      this.length = Math.ceil(stream.readShort() / 8)
-
-      if (this.isReliable()) {
-        this.messageIndex = stream.readLTriad()
-      }
-
-      if (this.isSequenced()) {
-        this.orderIndex = stream.readLTriad()
-        this.orderChannel = stream.readByte()
-      }
-
-      if(this.hasSplit) {
-        this.splitCount = stream.readInt()
-        this.splitId = stream.readShort()
-        this.splitIndex = stream.readInt()
-      }
-    }
+  constructor(id: number = Protocol.DATA_PACKET_4) {
+    super(id)
   }
 
   isReliable() {
@@ -62,6 +40,37 @@ export default class EncapsulatedPacket extends Packet {
       this.reliability === Reliability.ReliableSequenced ||
       this.reliability === Reliability.ReliableOrderedACK
     )
+  }
+
+  static fromBinary(stream: BinaryStream) {
+    const packet = new EncapsulatedPacket()
+
+    const flags = stream.readByte()
+    packet.reliability = ((flags & 0xe0) >> 5)
+    packet.hasSplit = (flags & 0x10) > 0
+
+    packet.length = Math.ceil(stream.readShort() / 8)
+
+    if (packet.isReliable()) {
+      packet.messageIndex = stream.readLTriad()
+    }
+
+    if (packet.isSequenced()) {
+      packet.orderIndex = stream.readLTriad()
+      packet.orderChannel = stream.readByte()
+    }
+
+    if(packet.hasSplit) {
+      packet.splitCount = stream.readInt()
+      packet.splitId = stream.readShort()
+      packet.splitIndex = stream.readInt()
+    }
+
+    console.log('offset', stream.offset, packet.length)
+    packet.setStream(new BinaryStream(stream.buffer.slice(stream.offset, stream.offset + packet.length)), true)
+    stream.offset += packet.length
+
+    return packet
   }
 
 }

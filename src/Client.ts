@@ -45,6 +45,7 @@ export default class Client {
   }
 
   handlePackets(datagram: Datagram) {
+    console.log('HANDLE PACKETS')
     const packets = datagram.packets
 
     if(datagram.sequenceNumber === 0 || datagram.sequenceNumber - this.lastSequenceNumber === 1) {
@@ -65,10 +66,12 @@ export default class Client {
         break;
       default:
         console.log("Game packet not yet implemented:", packet.getId())
+        console.log(packet.getStream().buffer[0])
     }
   }
 
   handleConnectionRequest(packet: EncapsulatedPacket) {
+    console.log('HANDLE CONNECTION REQUEST')
     // const request = new ConnectionRequest(packet)
     // console.log(packet.cid.toString())
     // console.log(packet.time.toString(), new Date().getTime())

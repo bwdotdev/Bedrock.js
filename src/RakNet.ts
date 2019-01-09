@@ -60,6 +60,7 @@ export default class RakNet {
 
     const packet = new OpenConnectionReplyTwo(req.port, req.mtuSize)
     if(!this.server.hasClient(recipient)) {
+      console.log('CREATING CLIENT')
       const client = new Client(recipient, req.mtuSize, this.server)
       this.server.addClient(client)
       this.server.send(packet.encode(), recipient)
