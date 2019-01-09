@@ -3,6 +3,7 @@ import Server from "@/Server"
 import Datagram from "@/packets/Datagram";
 import EncapsulatedPacket from "@/packets/EncapsulatedPacket";
 import Protocol from "@/Protocol";
+import ConnectionRequest from "./packets/ConnectionRequest";
 
 export default class Client {
 
@@ -66,14 +67,16 @@ export default class Client {
         break;
       default:
         console.log("Game packet not yet implemented:", packet.getId())
-        console.log(packet.getStream().buffer[0])
+        console.log(packet.getStream().buffer)
     }
   }
 
   handleConnectionRequest(packet: EncapsulatedPacket) {
     console.log('HANDLE CONNECTION REQUEST')
-    // const request = new ConnectionRequest(packet)
-    // console.log(packet.cid.toString())
+    const request = ConnectionRequest.fromEncapsulated(packet)
+    console.log(request.clientId)
+    console.log(request.sendPingTime)
+    console.log(request.hasSecurity)
     // console.log(packet.time.toString(), new Date().getTime())
     // process.exit()
 

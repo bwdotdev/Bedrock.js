@@ -21,9 +21,9 @@ export default class Datagram extends Packet {
   }
 
   static fromBinary(stream: BinaryStream): Datagram {
+    console.log('PACKET ID', stream.buffer)
     const packetId = stream.readByte()
     const datagram = new Datagram([], packetId)
-    console.log('PACKET ID', packetId)
 
     const flags = stream.readByte()
     datagram.packetPair = (flags & BitFlag.PacketPair) > 0;
@@ -34,7 +34,7 @@ export default class Datagram extends Packet {
 
     while (!stream.feof()) {
       let packet = EncapsulatedPacket.fromBinary(stream);
-      console.log(packet.getStream().buffer[0])
+      console.log(packet.getStream().buffer)
 
       if (packet.getStream().length === 0) {
         break;

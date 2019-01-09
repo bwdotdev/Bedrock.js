@@ -19,8 +19,8 @@ export default class EncapsulatedPacket extends Packet {
   public orderIndex: number = 0
   public orderChannel: number = 0
 
-  constructor(id: number = Protocol.DATA_PACKET_4) {
-    super(id)
+  constructor(id: number, stream?: BinaryStream) {
+    super(id, stream)
   }
 
   isReliable() {
@@ -42,8 +42,23 @@ export default class EncapsulatedPacket extends Packet {
     )
   }
 
+  static fromEncapsulated<T extends EncapsulatedPacket>(this: { new(stream: BinaryStream): T }, encapsulated: EncapsulatedPacket): T {
+    const packet = new this(encapsulated.getStream())
+    packet.reliability = encapsulated.reliability
+    packet.length = encapsulated.length
+    packet.messageIndex = encapsulated.messageIndex
+    packet.hasSplit = encapsulated.hasSplit
+    packet.splitCount = encapsulated.splitCount
+    packet.splitId = encapsulated.splitId
+    packet.splitIndex = encapsulated.splitIndex
+    packet.orderIndex = encapsulated.orderIndex
+    packet.orderChannel = encapsulated.orderChannel
+
+    return packet
+  }
+
   static fromBinary(stream: BinaryStream) {
-    const packet = new EncapsulatedPacket()
+    const packet = new EncapsulatedPacket(Protocol.DATA_PACKET_4)
 
     const flags = stream.readByte()
     packet.reliability = ((flags & 0xe0) >> 5)
@@ -65,6 +80,8 @@ export default class EncapsulatedPacket extends Packet {
       packet.splitId = stream.readShort()
       packet.splitIndex = stream.readInt()
     }
+
+    // stream.increaseOffset(2)
 
     console.log('offset', stream.offset, packet.length)
     packet.setStream(new BinaryStream(stream.buffer.slice(stream.offset, stream.offset + packet.length)), true)
