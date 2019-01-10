@@ -1,7 +1,6 @@
 import Packet from "@/Packet"
-import { BinaryStream } from "@/utils";
-import Reliability from "@/Reliability";
-import Protocol from "@/Protocol";
+import { BinaryStream } from "@/utils"
+import Reliability from "@/Reliability"
 
 export default class EncapsulatedPacket extends Packet {
 
@@ -15,6 +14,8 @@ export default class EncapsulatedPacket extends Packet {
   public splitCount: number = 0
   public splitId: number = 0
   public splitIndex: number = 0
+
+  public sequenceIndex: number = 0
 
   public orderIndex: number = 0
   public orderChannel: number = 0
@@ -36,34 +37,46 @@ export default class EncapsulatedPacket extends Packet {
   isSequenced() {
     return (
       this.reliability === Reliability.UnreliableSequenced ||
+      this.reliability === Reliability.ReliableSequenced
+    )
+  }
+
+  isOrdered() {
+    return (
       this.reliability === Reliability.ReliableOrdered ||
-      this.reliability === Reliability.ReliableSequenced ||
       this.reliability === Reliability.ReliableOrderedACK
     )
   }
 
-  protected encodeHeader() {
-    this.getStream().writeByte((this.reliability << 5) | (this.hasSplit ? 0x10 : 0x00))
-    this.getStream().writeByte(this.getStream().buffer.length << 3)
+  isSequencedOrOrdered() {
+    return this.isSequenced() || this.isOrdered()
+  }
+
+  toBinary() {
+    const stream = new BinaryStream()
+    stream.writeByte((this.reliability << 5) | (this.hasSplit ? 0x10 : 0x00))
+    stream.writeByte(stream.buffer.length << 3)
 
     if (this.isReliable()) {
-      this.getStream().writeLTriad(this.messageIndex)
-    }
-
-    if (this.isReliable()) {
-      this.getStream().writeLTriad(this.messageIndex);
+      stream.writeLTriad(this.messageIndex)
     }
 
     if (this.isSequenced()) {
-      this.getStream().writeLTriad(this.orderIndex);
-      this.getStream().writeByte(this.orderChannel);
+      stream.writeLTriad(this.sequenceIndex);
+    }
+
+    if (this.isSequencedOrOrdered()) {
+      stream.writeLTriad(this.orderIndex);
+      stream.writeByte(this.orderChannel);
     }
 
     if (this.hasSplit) {
-      this.getStream().writeInt(this.splitCount);
-      this.getStream().writeShort(this.splitId);
-      this.getStream().writeInt(this.splitIndex);
+      stream.writeInt(this.splitCount);
+      stream.writeShort(this.splitId);
+      stream.writeInt(this.splitIndex);
     }
+
+    return stream.append(this.encode())
   }
 
   static fromEncapsulated<T extends EncapsulatedPacket>(this: { new(stream: BinaryStream): T }, encapsulated: EncapsulatedPacket): T {
@@ -75,6 +88,7 @@ export default class EncapsulatedPacket extends Packet {
     packet.splitCount = encapsulated.splitCount
     packet.splitId = encapsulated.splitId
     packet.splitIndex = encapsulated.splitIndex
+    packet.sequenceIndex = encapsulated.sequenceIndex
     packet.orderIndex = encapsulated.orderIndex
     packet.orderChannel = encapsulated.orderChannel
 
@@ -95,6 +109,10 @@ export default class EncapsulatedPacket extends Packet {
     }
 
     if (packet.isSequenced()) {
+      packet.sequenceIndex = stream.readLTriad()
+    }
+
+    if (packet.isSequencedOrOrdered()) {
       packet.orderIndex = stream.readLTriad()
       packet.orderChannel = stream.readByte()
     }

@@ -23,16 +23,16 @@ export default class Datagram extends Packet {
   }
 
   protected encodeHeader() {
-    if(this.packetPair) this.headerFlags |= BitFlag.PacketPair
-    if(this.continuousSend) this.headerFlags |= BitFlag.ContinuousSend
-    if(this.needsBAndAs) this.headerFlags |= BitFlag.NeedsBAndS
+    // if(this.packetPair) this.headerFlags |= BitFlag.PacketPair
+    // if(this.continuousSend) this.headerFlags |= BitFlag.ContinuousSend
+    // if(this.needsBAndAs) this.headerFlags |= BitFlag.NeedsBAndS
 
     this.getStream().writeByte(BitFlag.Valid | this.headerFlags)
   }
 
   protected encodeBody() {
     this.getStream().writeLTriad(this.sequenceNumber)
-    this.packets.forEach(packet => this.getStream().append(packet.encode()))
+    this.packets.forEach(packet => this.getStream().append(packet.toBinary()))
   }
 
   static fromBinary(stream: BinaryStream): Datagram {
