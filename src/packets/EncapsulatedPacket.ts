@@ -42,6 +42,30 @@ export default class EncapsulatedPacket extends Packet {
     )
   }
 
+  protected encodeHeader() {
+    this.getStream().writeByte((this.reliability << 5) | (this.hasSplit ? 0x10 : 0x00))
+    this.getStream().writeByte(this.getStream().buffer.length << 3)
+
+    if (this.isReliable()) {
+      this.getStream().writeLTriad(this.messageIndex)
+    }
+
+    if (this.isReliable()) {
+      this.getStream().writeLTriad(this.messageIndex);
+    }
+
+    if (this.isSequenced()) {
+      this.getStream().writeLTriad(this.orderIndex);
+      this.getStream().writeByte(this.orderChannel);
+    }
+
+    if (this.hasSplit) {
+      this.getStream().writeInt(this.splitCount);
+      this.getStream().writeShort(this.splitId);
+      this.getStream().writeInt(this.splitIndex);
+    }
+  }
+
   static fromEncapsulated<T extends EncapsulatedPacket>(this: { new(stream: BinaryStream): T }, encapsulated: EncapsulatedPacket): T {
     const packet = new this(encapsulated.getStream())
     packet.reliability = encapsulated.reliability
@@ -75,7 +99,7 @@ export default class EncapsulatedPacket extends Packet {
       packet.orderChannel = stream.readByte()
     }
 
-    if(packet.hasSplit) {
+    if (packet.hasSplit) {
       packet.splitCount = stream.readInt()
       packet.splitId = stream.readShort()
       packet.splitIndex = stream.readInt()

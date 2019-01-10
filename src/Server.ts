@@ -121,6 +121,13 @@ export default class Server extends EventEmitter {
     this.clients.push(client)
   }
 
+  removeClient(client: Client) {
+    const index = this.clients.findIndex(c => c.address.ip === client.address.ip && c.address.port === client.address.port)
+    if(index === -1) return
+
+    this.clients.splice(index, 1)
+  }
+
   send(stream: BinaryStream, to: Address) {
     // console.log('sending to', to.ip, stream.buffer.length)
     this.socket.send(

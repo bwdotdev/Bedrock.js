@@ -40,19 +40,18 @@ export default class BinaryStream {
     return (ret === true ? (this.offset += v) : (this.offset += v) - v)
   }
 
-  append(buf: Buffer | string | any[]): this {
-    if (buf instanceof Buffer) {
+  append(buf: BinaryStream | Buffer | string): this {
+    if(buf instanceof BinaryStream) {
+      this.append(buf.buffer)
+    } else if (buf instanceof Buffer) {
       this.buffer = Buffer.concat([this.buffer, buf])
       this.offset += buf.length
     } else if (typeof buf === "string") {
       buf = Buffer.from(buf, "hex")
       this.buffer = Buffer.concat([this.buffer, buf])
       this.offset += buf.length
-    } else if (Array.isArray(buf)) {
-      buf = Buffer.from(buf)
-      this.buffer = Buffer.concat([this.buffer, buf])
-      this.offset += buf.length
     }
+
     return this
   }
 

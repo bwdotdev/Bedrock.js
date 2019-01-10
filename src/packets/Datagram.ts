@@ -14,10 +14,25 @@ export default class Datagram extends Packet {
   public continuousSend: boolean = false
   public needsBAndAs: boolean = false
 
+  public headerFlags: number = 0
+
   constructor(packets: EncapsulatedPacket[] = [], id: number = Protocol.DATA_PACKET_4) {
     super(id)
 
     this.packets = packets
+  }
+
+  protected encodeHeader() {
+    if(this.packetPair) this.headerFlags |= BitFlag.PacketPair
+    if(this.continuousSend) this.headerFlags |= BitFlag.ContinuousSend
+    if(this.needsBAndAs) this.headerFlags |= BitFlag.NeedsBAndS
+
+    this.getStream().writeByte(BitFlag.Valid | this.headerFlags)
+  }
+
+  protected encodeBody() {
+    this.getStream().writeLTriad(this.sequenceNumber)
+    this.packets.forEach(packet => this.getStream().append(packet.encode()))
   }
 
   static fromBinary(stream: BinaryStream): Datagram {

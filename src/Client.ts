@@ -66,6 +66,9 @@ export default class Client {
       case Protocol.CONNECTION_REQUEST:
         this.handleConnectionRequest(packet)
         break;
+      case Protocol.DISCONNECTION_NOTIFICATION:
+        this.server.removeClient(this)
+        break;
       default:
         console.log("Game packet not yet implemented:", packet.getId())
         console.log(packet.getStream().buffer)

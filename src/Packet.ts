@@ -27,13 +27,17 @@ export default class Packet {
   }
 
   public encode(): BinaryStream {
-    this.stream.writeByte(this.id)
+    this.encodeHeader()
     this.encodeBody()
     return this.stream
   }
 
   public getStream(): BinaryStream {
     return this.stream
+  }
+
+  protected encodeHeader() {
+    this.stream.writeByte(this.id)
   }
 
   protected encodeBody() { }
