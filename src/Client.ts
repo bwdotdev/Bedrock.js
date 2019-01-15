@@ -1,4 +1,4 @@
-import { Address } from "@/utils"
+import { Address, BinaryStream } from "@/utils"
 import Server from "@/Server"
 import Datagram from "@/packets/Datagram"
 import EncapsulatedPacket from "@/packets/EncapsulatedPacket"
@@ -19,6 +19,7 @@ export default class Client {
   public messageIndex: number = 0
   public sequenceNumber: number = 0
   public lastSequenceNumber: number = 0
+  public splitId: number = 0
 
   public channelIndex: number[] = []
 
@@ -39,6 +40,8 @@ export default class Client {
     this.mtuSize = mtuSize
     this.server = server
 
+    this.packetQueue.needsBAndAs = true
+
     this.tickInterval = setInterval(() => {
       this.tick()
     }, 500);
@@ -57,12 +60,6 @@ export default class Client {
       this.NAKQueue.ids = []
     }
 
-    if(this.packetQueue.packets.length) {
-      this.packetQueue.sequenceNumber++
-      this.server.send(this.packetQueue.encode(), this.address)
-      this.packetQueue.packets = []
-    }
-
     if(this.datagramQueue.length) {
       let limit = 16
       let i = 0
@@ -76,11 +73,13 @@ export default class Client {
         i++
       })
     }
+
+    if(this.packetQueue.packets.length) {
+      this.sendPacketQueue()
+    }
   }
 
-  queueEncapsulatedPacket(packet: EncapsulatedPacket) {
-    // this.packetQueue.packets.push(packet);
-
+  queueEncapsulatedPacket(packet: EncapsulatedPacket, immediate: boolean = false) {
     if(packet.isReliable()) {
       packet.messageIndex = this.messageIndex++
     }
@@ -92,14 +91,58 @@ export default class Client {
     let maxSize = this.mtuSize - 60
 
     if(packet.getStream().buffer.length > maxSize) {
+      const splitId = ++this.splitId % 65536
+      let splitIndex = 0
+      const splitCount = Math.ceil(packet.getStream().length / maxSize)
 
+      while(!packet.getStream().feof()) {
+        const stream = new BinaryStream(packet.getStream().buffer.slice(packet.getStream().offset, packet.getStream().offset += maxSize))
+        const pk = new EncapsulatedPacket()
+        pk.splitId = splitId
+        pk.hasSplit = true
+        pk.splitCount = splitCount
+        pk.reliability = packet.reliability
+        pk.splitIndex = splitIndex
+        pk.setStream(stream)
+
+        if(splitIndex > 0) {
+          pk.messageIndex = this.messageIndex++
+        } else {
+          pk.messageIndex = packet.messageIndex
+        }
+
+        pk.orderChannel = packet.orderChannel
+        pk.orderIndex = packet.orderIndex
+
+        this.addToQueue(pk, immediate)
+        splitIndex++
+      }
     } else {
-      this.addToQueue(packet)
+      this.addToQueue(packet, immediate)
     }
   }
 
-  addToQueue(packet: Packet) {
-    // https://github.com/PocketNode/RakNet/blob/f360f66b6439bb2db4ef10cd5a63a3b201a83937/server/Session.js#L426
+  addToQueue(packet: EncapsulatedPacket, immediate: boolean = false) {
+    const length = this.packetQueue.packets.length
+    if((length + packet.getStream().length) > (this.mtuSize - 36)) {
+      this.sendPacketQueue()
+    }
+
+    if(packet.needsACK) {
+      console.log('Needs ACK')
+    }
+
+    this.packetQueue.packets.push(packet)
+
+    if(immediate) {
+      this.sendPacketQueue()
+    }
+  }
+
+  private sendPacketQueue() {
+    this.packetQueue.sequenceNumber++
+    this.server.send(this.packetQueue.encode(), this.address)
+    this.packetQueue.packets = []
   }
 
   handlePackets(datagram: Datagram) {
@@ -172,7 +215,7 @@ export default class Client {
     this.id = request.clientId
 
     const reply = new ConnectionRequestAccepted(this.address, request.sendPingTime, this.server.getTime())
-    this.sendPacket(reply)
+    this.addToQueue(reply)
   }
 
 }

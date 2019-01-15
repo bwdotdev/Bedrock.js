@@ -1,6 +1,7 @@
 import Packet from "@/Packet"
 import { BinaryStream } from "@/utils"
 import Reliability from "@/Reliability"
+import Protocol from "@/Protocol";
 
 export default class EncapsulatedPacket extends Packet {
 
@@ -20,7 +21,9 @@ export default class EncapsulatedPacket extends Packet {
   public orderIndex: number = 0
   public orderChannel: number = 0
 
-  constructor(id: number, stream?: BinaryStream) {
+  public needsACK: boolean = false
+
+  constructor(id: number = Protocol.DATA_PACKET_4, stream?: BinaryStream) {
     super(id, stream)
   }
 
