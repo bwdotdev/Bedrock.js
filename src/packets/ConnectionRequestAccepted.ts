@@ -21,8 +21,6 @@ export default class ConnectionRequestAccepted extends EncapsulatedPacket {
   }
 
   protected encodeBody() {
-    console.log('PingTime', this.pingTime)
-    console.log('PongTime', this.pongTime)
     this.getStream()
       .writeAddress(this.address)
       .writeShort(0)

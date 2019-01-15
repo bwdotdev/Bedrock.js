@@ -46,7 +46,6 @@ export default class RakNet {
     const req = new OpenConnectionRequestOne(stream)
 
     if (req.protocol !== Protocol.PROTOCOL_VERSION) {
-      console.log('incompat proto', req.protocol, Protocol.PROTOCOL_VERSION)
       const packet = new IncompatibleProtocol()
       this.server.send(packet.encode(), recipient)
     } else {
@@ -60,7 +59,6 @@ export default class RakNet {
 
     const packet = new OpenConnectionReplyTwo(req.port, req.mtuSize)
     if(!this.server.hasClient(recipient)) {
-      console.log('CREATING CLIENT')
       const client = new Client(recipient, req.mtuSize, this.server)
       this.server.addClient(client)
       this.server.send(packet.encode(), recipient)

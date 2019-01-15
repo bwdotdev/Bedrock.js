@@ -11,8 +11,6 @@ export default class ConnectionRequest extends EncapsulatedPacket {
   constructor(stream: BinaryStream) {
     super(Protocol.CONNECTION_REQUEST, stream)
 
-    // console.log('cr', this.getStream().readByte())
-
     this.clientId = this.getStream().readLong()
     this.sendPingTime = this.getStream().readLong()
     this.hasSecurity = this.getStream().readBool()

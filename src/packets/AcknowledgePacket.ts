@@ -6,8 +6,31 @@ export default class AcknowledgePacket extends Packet {
 
   public ids: number[] = []
 
-  constructor(id: Protocol) {
-    super(id)
+  constructor(id: Protocol, stream?: BinaryStream) {
+    super(id, stream)
+
+    if(stream) {
+      const count = stream.readShort()
+      let cnt = 0
+
+      for(let i = 0; i < count && !stream.feof() && cnt < 4096; i++) {
+        const byte = stream.readByte()
+        if(byte === 0) {
+          const start = stream.readLTriad()
+          let end = stream.readLTriad()
+          if((end - start) > 512) {
+            end = start + 512
+          }
+          for(let c = start; c <= end; c++) {
+            this.ids.push(c)
+            cnt++
+          }
+        } else {
+          this.ids.push(stream.readLTriad())
+          cnt++
+        }
+      }
+    }
   }
 
   protected encodeBody() {

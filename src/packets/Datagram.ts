@@ -27,7 +27,6 @@ export default class Datagram extends Packet {
     // if(this.continuousSend) this.headerFlags |= BitFlag.ContinuousSend
     // if(this.needsBAndAs) this.headerFlags |= BitFlag.NeedsBAndS
 
-    console.log('HF', BitFlag.Valid | this.headerFlags)
     this.getStream().writeByte(BitFlag.Valid | this.headerFlags)
   }
 
@@ -38,10 +37,8 @@ export default class Datagram extends Packet {
 
   static fromBinary(stream: BinaryStream): Datagram {
     const flags = stream.readByte()
-    // const datagram = new Datagram([], packetId)
     const datagram = new Datagram([], flags)
 
-    // const flags = stream.readByte()
     datagram.packetPair = (flags & BitFlag.PacketPair) > 0;
     datagram.continuousSend = (flags & BitFlag.ContinuousSend) > 0;
     datagram.needsBAndAs = (flags & BitFlag.NeedsBAndS) > 0;

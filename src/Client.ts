@@ -11,11 +11,16 @@ import Packet from "./Packet"
 
 export default class Client {
 
+  public id: number | null = null
+
   public address: Address
 
   public mtuSize: number
+  public messageIndex: number = 0
   public sequenceNumber: number = 0
   public lastSequenceNumber: number = 0
+
+  public channelIndex: number[] = []
 
   private server: Server
 
@@ -41,6 +46,17 @@ export default class Client {
 
   tick() {
     // console.log('tick!')
+
+    if(this.ACKQueue.ids.length) {
+      this.server.send(this.ACKQueue.encode(), this.address)
+      this.ACKQueue.ids = []
+    }
+
+    if(this.NAKQueue.ids.length) {
+      this.server.send(this.NAKQueue.encode(), this.address)
+      this.NAKQueue.ids = []
+    }
+
     if(this.packetQueue.packets.length) {
       this.packetQueue.sequenceNumber++
       this.server.send(this.packetQueue.encode(), this.address)
@@ -53,43 +69,59 @@ export default class Client {
       this.datagramQueue.forEach(async(datagram, index) => {
         if(i > limit) return
 
+        this.recoveryQueue.set(datagram.sequenceNumber, datagram)
         this.server.send(datagram.encode(), this.address)
         this.datagramQueue.splice(index, 1)
 
         i++
       })
     }
+  }
 
-    if(this.ACKQueue.ids.length) {
-      this.server.send(this.ACKQueue.encode(), this.address)
-      this.ACKQueue.ids = []
+  queueEncapsulatedPacket(packet: EncapsulatedPacket) {
+    // this.packetQueue.packets.push(packet);
+
+    if(packet.isReliable()) {
+      packet.messageIndex = this.messageIndex++
     }
 
-    if(this.NAKQueue.ids.length) {
-      this.server.send(this.NAKQueue.encode(), this.address)
-      this.NAKQueue.ids = []
+    if(packet.isSequenced()) {
+      packet.orderIndex = this.channelIndex[packet.orderChannel]++
+    }
+
+    let maxSize = this.mtuSize - 60
+
+    if(packet.getStream().buffer.length > maxSize) {
+
+    } else {
+      this.addToQueue(packet)
     }
   }
 
-  sendPacket(packet: EncapsulatedPacket) {
-    this.packetQueue.packets.push(packet);
+  addToQueue(packet: Packet) {
+    // https://github.com/PocketNode/RakNet/blob/f360f66b6439bb2db4ef10cd5a63a3b201a83937/server/Session.js#L426
   }
 
   handlePackets(datagram: Datagram) {
-    console.log('HANDLE PACKETS')
     const packets = datagram.packets
 
-    const index = this.NAKQueue.ids.findIndex(nid => nid === datagram.sequenceNumber)
-    if(index !== -1) this.NAKQueue.ids.splice(index, 1)
+    const diff = datagram.sequenceNumber - this.lastSequenceNumber
+
+    if(this.NAKQueue.ids.length) {
+      const index = this.NAKQueue.ids.findIndex(i => i === datagram.sequenceNumber)
+      if(index !== -1) this.NAKQueue.ids.splice(index, 1)
+
+      if(diff !== 1) {
+        for(let i = this.lastSequenceNumber; i < datagram.sequenceNumber; i++){
+          this.NAKQueue.ids.push(i);
+        }
+      }
+    }
 
     this.ACKQueue.ids.push(datagram.sequenceNumber)
 
-    if(datagram.sequenceNumber === 0 || datagram.sequenceNumber - this.lastSequenceNumber === 1) {
+    if(diff >= 1) {
       this.lastSequenceNumber = datagram.sequenceNumber
-    } else {
-      for(let i = this.lastSequenceNumber; i < datagram.sequenceNumber; i++){
-        this.NAKQueue.ids.push(i);
-      }
     }
 
     packets.forEach(packet => this.handlePacket(packet))
@@ -99,20 +131,22 @@ export default class Client {
     if(packet instanceof EncapsulatedPacket) return this.handleEncapsulatedPacket(packet)
 
     if(packet instanceof ACK) {
-      // https://github.com/pmmp/RakLib/blob/2f5dfdaa28ff69d72cd1682faa521e18b17a15ef/src/server/Session.php#L599
-      console.log('ACK NOT IMPLEMENTED')
+      packet.ids.forEach(id => {
+        const packet = this.recoveryQueue.get(id)
+        if(packet) {
+          this.recoveryQueue.delete(id)
+        }
+      })
     }
 
     if(packet instanceof NAK) {
-      // https://github.com/pmmp/RakLib/blob/2f5dfdaa28ff69d72cd1682faa521e18b17a15ef/src/server/Session.php#L611
-      console.log('CLIENT NAK')
       packet.ids.forEach(id => {
-        if(this.recoveryQueue.has(id)) {
-          const packet = this.recoveryQueue.get(id)
-          if(packet) {
-            this.datagramQueue.push(packet)
-            this.recoveryQueue.delete(id)
-          }
+        console.log(id, this.recoveryQueue)
+        const packet = this.recoveryQueue.get(id)
+        if(packet) {
+          console.log(id)
+          this.datagramQueue.push(packet)
+          this.recoveryQueue.delete(id)
         }
       })
     }
@@ -133,13 +167,10 @@ export default class Client {
   }
 
   handleConnectionRequest(packet: EncapsulatedPacket) {
-    console.log('HANDLE CONNECTION REQUEST')
     const request = ConnectionRequest.fromEncapsulated(packet)
-    console.log(request.getStream().buffer)
-    // console.log(packet.time.toString(), new Date().getTime())
-    // process.exit()
 
-    // const time = Date.now() - this.server.startTime
+    this.id = request.clientId
+
     const reply = new ConnectionRequestAccepted(this.address, request.sendPingTime, this.server.getTime())
     this.sendPacket(reply)
   }

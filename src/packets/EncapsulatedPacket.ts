@@ -22,7 +22,6 @@ export default class EncapsulatedPacket extends Packet {
 
   constructor(id: number, stream?: BinaryStream) {
     super(id, stream)
-    // this.getStream().increaseOffset(1)
   }
 
   isReliable() {
@@ -55,7 +54,6 @@ export default class EncapsulatedPacket extends Packet {
 
   toBinary() {
     const stream = new BinaryStream()
-    console.log('split', this.hasSplit)
     stream.writeByte((this.reliability << 5) | (this.hasSplit ? 0x10 : 0))
     stream.writeShort(stream.length << 3)
 
@@ -79,7 +77,6 @@ export default class EncapsulatedPacket extends Packet {
     }
 
     const packetStream = this.encode()
-    console.log('STREAM', packetStream.buffer)
 
     return stream.append(packetStream)
   }
