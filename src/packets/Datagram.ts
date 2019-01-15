@@ -27,6 +27,7 @@ export default class Datagram extends Packet {
     // if(this.continuousSend) this.headerFlags |= BitFlag.ContinuousSend
     // if(this.needsBAndAs) this.headerFlags |= BitFlag.NeedsBAndS
 
+    console.log('HF', BitFlag.Valid | this.headerFlags)
     this.getStream().writeByte(BitFlag.Valid | this.headerFlags)
   }
 
@@ -36,7 +37,6 @@ export default class Datagram extends Packet {
   }
 
   static fromBinary(stream: BinaryStream): Datagram {
-    console.log('PACKET ID', stream.buffer)
     const flags = stream.readByte()
     // const datagram = new Datagram([], packetId)
     const datagram = new Datagram([], flags)
@@ -48,12 +48,8 @@ export default class Datagram extends Packet {
 
     datagram.sequenceNumber = stream.readLTriad()
 
-    console.log('BOI', stream.offset, stream.buffer)
-
     while (!stream.feof()) {
-      console.log('ep', stream.offset, stream.buffer)
       let packet = EncapsulatedPacket.fromBinary(stream);
-      console.log(packet.getStream().buffer)
 
       if (!packet.getStream().length) {
         break;

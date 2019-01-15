@@ -1,10 +1,13 @@
-import { Address, BinaryStream } from "@/utils"
+import { Address } from "@/utils"
 import Server from "@/Server"
-import Datagram from "@/packets/Datagram";
-import EncapsulatedPacket from "@/packets/EncapsulatedPacket";
-import Protocol from "@/Protocol";
-import ConnectionRequest from "./packets/ConnectionRequest";
-import ConnectionRequestAccepted from "./packets/ConnectionRequestAccepted";
+import Datagram from "@/packets/Datagram"
+import EncapsulatedPacket from "@/packets/EncapsulatedPacket"
+import Protocol from "@/Protocol"
+import ConnectionRequest from "./packets/ConnectionRequest"
+import ConnectionRequestAccepted from "./packets/ConnectionRequestAccepted"
+import NAK from "./packets/NAK"
+import ACK from "./packets/ACK"
+import Packet from "./Packet"
 
 export default class Client {
 
@@ -16,7 +19,8 @@ export default class Client {
 
   private server: Server
 
-  public NACKQueue: number[] = []
+  public ACKQueue: ACK = new ACK()
+  public NAKQueue: NAK = new NAK()
 
   public packetQueue: Datagram = new Datagram()
 
@@ -40,6 +44,16 @@ export default class Client {
       this.server.send(this.packetQueue.encode(), this.address)
       this.packetQueue.packets = []
     }
+
+    if(this.ACKQueue.ids.length) {
+      this.server.send(this.ACKQueue.encode(), this.address)
+      this.ACKQueue.ids = []
+    }
+
+    if(this.NAKQueue.ids.length) {
+      this.server.send(this.NAKQueue.encode(), this.address)
+      this.NAKQueue.ids = []
+    }
   }
 
   sendPacket(packet: EncapsulatedPacket) {
@@ -50,18 +64,37 @@ export default class Client {
     console.log('HANDLE PACKETS')
     const packets = datagram.packets
 
+    const index = this.NAKQueue.ids.findIndex(nid => nid === datagram.sequenceNumber)
+    if(index !== -1) this.NAKQueue.ids.splice(index, 1)
+
+    this.ACKQueue.ids.push(datagram.sequenceNumber)
+
     if(datagram.sequenceNumber === 0 || datagram.sequenceNumber - this.lastSequenceNumber === 1) {
       this.lastSequenceNumber = datagram.sequenceNumber
     } else {
       for(let i = this.lastSequenceNumber; i < datagram.sequenceNumber; i++){
-        this.NACKQueue.push(i);
+        this.NAKQueue.ids.push(i);
       }
     }
 
     packets.forEach(packet => this.handlePacket(packet))
   }
 
-  handlePacket(packet: EncapsulatedPacket) {
+  handlePacket(packet: Packet) {
+    if(packet instanceof EncapsulatedPacket) return this.handleEncapsulatedPacket(packet)
+
+    if(packet instanceof ACK) {
+      // https://github.com/pmmp/RakLib/blob/2f5dfdaa28ff69d72cd1682faa521e18b17a15ef/src/server/Session.php#L599
+      console.log('ACK NOT IMPLEMENTED')
+    }
+
+    if(packet instanceof NAK) {
+      // https://github.com/pmmp/RakLib/blob/2f5dfdaa28ff69d72cd1682faa521e18b17a15ef/src/server/Session.php#L611
+      console.log('NAK NOT IMPLEMENTED')
+    }
+  }
+
+  handleEncapsulatedPacket(packet: EncapsulatedPacket) {
     switch(packet.getId()) {
       case Protocol.CONNECTION_REQUEST:
         this.handleConnectionRequest(packet)
@@ -78,9 +111,7 @@ export default class Client {
   handleConnectionRequest(packet: EncapsulatedPacket) {
     console.log('HANDLE CONNECTION REQUEST')
     const request = ConnectionRequest.fromEncapsulated(packet)
-    console.log(request.clientId)
-    console.log(request.sendPingTime, new Date().getTime())
-    console.log(request.hasSecurity)
+    console.log(request.getStream().buffer)
     // console.log(packet.time.toString(), new Date().getTime())
     // process.exit()
 

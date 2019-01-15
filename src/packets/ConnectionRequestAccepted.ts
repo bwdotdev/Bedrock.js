@@ -21,11 +21,13 @@ export default class ConnectionRequestAccepted extends EncapsulatedPacket {
   }
 
   protected encodeBody() {
+    console.log('PingTime', this.pingTime)
+    console.log('PongTime', this.pongTime)
     this.getStream()
       .writeAddress(this.address)
       .writeShort(0)
 
-    const addressFiller = { ip: '0.0.0.0', port: 0, family: AddressFamily.IPV4 }
+    const addressFiller: Address = { ip: '0.0.0.0', port: 0, family: AddressFamily.IPV4 }
     for(let i = 0; i < 20; i++) {
       this.getStream().writeAddress(this.systemAddresses[i] || addressFiller)
     }

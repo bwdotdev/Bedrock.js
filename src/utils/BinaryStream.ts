@@ -1,5 +1,5 @@
 import { Address, Round, AddressFamily } from '@/utils'
-import Protocol from '@/Protocol';
+import Protocol, { Magic } from '@/Protocol'
 
 export default class BinaryStream {
   
@@ -42,15 +42,15 @@ export default class BinaryStream {
 
   append(buf: BinaryStream | Buffer | string): this {
     if(buf instanceof BinaryStream) {
-      this.append(buf.buffer)
-    } else if (buf instanceof Buffer) {
-      this.buffer = Buffer.concat([this.buffer, buf])
-      this.offset += buf.length
-    } else if (typeof buf === "string") {
+      return this.append(buf.buffer)
+    } 
+    
+    if (typeof buf === "string") {
       buf = Buffer.from(buf, "hex")
-      this.buffer = Buffer.concat([this.buffer, buf])
-      this.offset += buf.length
     }
+
+    this.buffer = Buffer.concat([this.buffer, buf], this.buffer.length + buf.length)
+    this.offset += buf.length
 
     return this
   }
@@ -389,11 +389,15 @@ export default class BinaryStream {
   writeAddress(address: Address): this {
     this.writeByte(address.family)
     switch (address.family) {
-      default:
       case AddressFamily.IPV4:
-      address.ip.split(".", 4).forEach(b => this.writeByte((Number(b)) & 0xff))
+        address.ip.split(".", 4).forEach(b => this.writeByte((Number(b)) & 0xff))
         this.writeShort(address.port)
         break
+      case AddressFamily.IPV6:
+        console.log('ERR -> IPV6 not supported')
+        break;
+      default:
+        console.log('ERR -> Unknown address family:', address.family)
     }
     return this
   }
@@ -408,7 +412,7 @@ export default class BinaryStream {
   }
 
   writeMagic() {
-    this.append(Buffer.from(Protocol.MAGIC, 'binary'))
+    this.append(Buffer.from(Magic, 'binary'))
     return this
   }
 

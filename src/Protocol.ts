@@ -1,7 +1,6 @@
 enum Protocol {
   PROTOCOL_VERSION = 9,
   SERVER_ID = 925686942,
-  MAGIC = "\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78",
 
   INTERNAL_PING = 0x00,
   UNCONNECTED_PING = 0x01,
@@ -15,6 +14,10 @@ enum Protocol {
   CONNECTION_REQUEST = 0x09,
   CONNECTION_REQUEST_ACCEPTED = 0x10,
   DISCONNECTION_NOTIFICATION = 0x15,
+  INCOMPATIBLE_PROTOCOL = 0x19,
+
+  ACK = 0xc0,
+  NAK = 0xa0,
 
   DATA_PACKET_0 = 0x80,
   DATA_PACKET_1 = 0x81,
@@ -33,5 +36,7 @@ enum Protocol {
   DATA_PACKET_E = 0x8e,
   DATA_PACKET_F = 0x8f,
 }
+
+export const Magic = "\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78"
 
 export default Protocol

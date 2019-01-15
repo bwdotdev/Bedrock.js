@@ -1,11 +1,12 @@
 import { BinaryStream } from '@/utils'
+import Protocol from './Protocol'
 
 export default class Packet {
 
-  private id: number
+  private id: Protocol
   private stream: BinaryStream
 
-  constructor(packetId: number, stream?: BinaryStream) {
+  constructor(packetId: Protocol, stream?: BinaryStream) {
     this.id = packetId
 
     if(stream) {
@@ -16,7 +17,7 @@ export default class Packet {
     }
   }
 
-  public getId(): number {
+  public getId(): Protocol {
     return this.id
   }
 
@@ -27,6 +28,7 @@ export default class Packet {
   }
 
   public encode(): BinaryStream {
+    this.stream = new BinaryStream()
     this.encodeHeader()
     this.encodeBody()
     return this.stream

@@ -32,7 +32,7 @@ export default class Server extends EventEmitter {
     this.name = 'Sky Wars'
     this.maxPlayers = 50
 
-    this.startTime = Date.now()
+    this.startTime = Math.floor(Date.now())
 
     this.raknet = new RakNet(this)
 
@@ -55,7 +55,7 @@ export default class Server extends EventEmitter {
   }
 
   public getTime() {
-    return Date.now() - this.startTime
+    return Math.floor(Date.now()) - this.startTime
   }
 
   startListeners() {
@@ -94,6 +94,7 @@ export default class Server extends EventEmitter {
       }
 
       const client = this.getClient(recipient)
+      if(!client) return
 
       if (packetId & BitFlag.ACK) {
         console.log('ACK', packetId)
@@ -102,7 +103,7 @@ export default class Server extends EventEmitter {
       } else {
         const datagram = Datagram.fromBinary(stream)
 
-        if (client) client.handlePackets(datagram)
+        client.handlePackets(datagram)
       }
     } else {
       this.raknet.handleUnconnectedPacket(stream, recipient)
@@ -129,7 +130,6 @@ export default class Server extends EventEmitter {
   }
 
   send(stream: BinaryStream, to: Address) {
-    // console.log('sending to', to.ip, stream.buffer.length)
     this.socket.send(
       stream.buffer,
       to.port,
