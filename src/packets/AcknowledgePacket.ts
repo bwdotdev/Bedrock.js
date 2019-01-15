@@ -4,12 +4,10 @@ import { BinaryStream } from "@/utils"
 
 export default class AcknowledgePacket extends Packet {
 
-  public ids: number[]
+  public ids: number[] = []
 
-  constructor(id: Protocol, ids: number[] = []) {
+  constructor(id: Protocol) {
     super(id)
-
-    this.ids = ids
   }
 
   protected encodeBody() {

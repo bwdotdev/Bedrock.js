@@ -6,6 +6,7 @@ import Datagram from '@/packets/Datagram';
 import RakNet from '@/RakNet';
 import Client from '@/Client';
 import BitFlag from './utils/BitFlag';
+import NAK from './packets/NAK';
 
 export default class Server extends EventEmitter {
 
@@ -99,7 +100,8 @@ export default class Server extends EventEmitter {
       if (packetId & BitFlag.ACK) {
         console.log('ACK', packetId)
       } else if (packetId & BitFlag.NAK) {
-        console.log('NAK', packetId)
+        console.log('NAK', stream.buffer.length, stream.offset, stream.buffer)
+        client.handlePacket(new NAK(stream))
       } else {
         const datagram = Datagram.fromBinary(stream)
 

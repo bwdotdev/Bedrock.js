@@ -22,7 +22,10 @@ export default class Client {
   public ACKQueue: ACK = new ACK()
   public NAKQueue: NAK = new NAK()
 
+  public datagramQueue: Datagram[] = []
   public packetQueue: Datagram = new Datagram()
+
+  public recoveryQueue: Map<number, Datagram> = new Map()
 
   public tickInterval: NodeJS.Timeout
 
@@ -39,10 +42,22 @@ export default class Client {
   tick() {
     // console.log('tick!')
     if(this.packetQueue.packets.length) {
-      console.log('Sending', this.packetQueue.packets.length, 'packets')
       this.packetQueue.sequenceNumber++
       this.server.send(this.packetQueue.encode(), this.address)
       this.packetQueue.packets = []
+    }
+
+    if(this.datagramQueue.length) {
+      let limit = 16
+      let i = 0
+      this.datagramQueue.forEach(async(datagram, index) => {
+        if(i > limit) return
+
+        this.server.send(datagram.encode(), this.address)
+        this.datagramQueue.splice(index, 1)
+
+        i++
+      })
     }
 
     if(this.ACKQueue.ids.length) {
@@ -90,7 +105,16 @@ export default class Client {
 
     if(packet instanceof NAK) {
       // https://github.com/pmmp/RakLib/blob/2f5dfdaa28ff69d72cd1682faa521e18b17a15ef/src/server/Session.php#L611
-      console.log('NAK NOT IMPLEMENTED')
+      console.log('CLIENT NAK')
+      packet.ids.forEach(id => {
+        if(this.recoveryQueue.has(id)) {
+          const packet = this.recoveryQueue.get(id)
+          if(packet) {
+            this.datagramQueue.push(packet)
+            this.recoveryQueue.delete(id)
+          }
+        }
+      })
     }
   }
 
