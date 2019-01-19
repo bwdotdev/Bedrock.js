@@ -11,4 +11,4 @@ Without the following repositories as a constant reference, this project would n
 - falkirks ([falkirks/DirtServer](https://github.com/falkirks/DirtServer))
 
 #### Links
-- Discord ([Discord](https://discord.gg/W2KZBzC))
+- [Discord](https://discord.gg/W2KZBzC)
