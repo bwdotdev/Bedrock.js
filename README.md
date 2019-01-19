@@ -9,3 +9,6 @@ Without the following repositories as a constant reference, this project would n
 - GoMint ([GoMint/jRakNet](https://github.com/GoMint/jRakNet), [GoMint/GoMint](https://github.com/GoMint/GoMint))
 - PMMP ([pmmp/RakLib](https://github.com/pmmp/RakLib), [pmmp/PocketMine-MP](https://github.com/pmmp/PocketMine-MP))
 - falkirks ([falkirks/DirtServer](https://github.com/falkirks/DirtServer))
+
+#### Links
+- Discord ([Discord](https://discord.gg/W2KZBzC))
