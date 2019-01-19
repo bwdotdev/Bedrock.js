@@ -24,7 +24,6 @@ export default class Server extends EventEmitter {
   private socket: dgram.Socket
 
   private logger: any
-  // private logger: Logger
 
   constructor(ip: string = "127.0.0.1", port: number = 19132) {
     super()
@@ -41,7 +40,7 @@ export default class Server extends EventEmitter {
     this.clients = []
 
     this.socket = dgram.createSocket("udp4")
-    // this.logger = require("./utils/Logger")
+
     this.logger = console
 
     this.startListeners()
