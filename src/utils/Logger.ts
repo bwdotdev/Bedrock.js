@@ -1,5 +1,4 @@
 import chalk from 'chalk'
-import { deprecate } from 'util';
 
 export default class Logger {
 
