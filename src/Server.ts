@@ -2,12 +2,13 @@ import dgram from 'dgram'
 import { EventEmitter } from 'events'
 
 import { Address, BinaryStream } from '@/utils'
-import Datagram from '@/packets/Datagram';
-import RakNet from '@/RakNet';
-import Client from '@/Client';
-import BitFlag from './utils/BitFlag';
-import NAK from './packets/NAK';
-import ACK from './packets/ACK';
+import Datagram from '@/packets/Datagram'
+import RakNet from '@/RakNet'
+import Client from '@/Client'
+import BitFlag from '@/utils/BitFlag'
+import NAK from '@/packets/NAK'
+import ACK from '@/packets/ACK'
+import Logger from '@/utils/Logger'
 
 export default class Server extends EventEmitter {
 
@@ -23,7 +24,7 @@ export default class Server extends EventEmitter {
 
   private socket: dgram.Socket
 
-  private logger: any
+  private logger: Logger
 
   constructor(ip: string = "127.0.0.1", port: number = 19132) {
     super()
@@ -41,7 +42,7 @@ export default class Server extends EventEmitter {
 
     this.socket = dgram.createSocket("udp4")
 
-    this.logger = console
+    this.logger = new Logger('Server')
 
     this.startListeners()
     this.socket.bind(this.port, this.ip)
@@ -90,7 +91,7 @@ export default class Server extends EventEmitter {
     const packetId = stream.buffer[0]
     if (this.hasClient(recipient)) {
       if ((packetId & BitFlag.Valid) === 0) {
-        console.log('Ignored', packetId)
+        this.logger.debug('Ignored packet:', packetId)
         return
       }
 

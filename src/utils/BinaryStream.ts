@@ -1,14 +1,19 @@
 import { Address, Round, AddressFamily } from '@/utils'
-import Protocol, { Magic } from '@/Protocol'
+import { Magic } from '@/Protocol'
+import Logger from '@/utils/Logger'
 
 export default class BinaryStream {
   
   public buffer: Buffer
   public offset: number
 
+  private logger: Logger
+
   constructor(buffer?: Buffer) {
     this.buffer = Buffer.alloc(0)
     this.offset = 0
+
+    this.logger = new Logger('BinaryStream')
 
     if(buffer) {
       this.append(buffer)
@@ -394,10 +399,10 @@ export default class BinaryStream {
         this.writeShort(address.port)
         break
       case AddressFamily.IPV6:
-        console.log('ERR -> IPV6 not supported')
+        this.logger.error('IPV6 is not yet supported')
         break;
       default:
-        console.log('ERR -> Unknown address family:', address.family)
+        this.logger.error('ERR -> Unknown address family:', address.family)
     }
     return this
   }

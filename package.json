@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "bytebuffer": "^5.0.1",
+    "chalk": "^2.4.2",
     "uint64be": "^2.0.2"
   },
   "devDependencies": {

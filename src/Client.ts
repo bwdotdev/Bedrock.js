@@ -3,11 +3,12 @@ import Server from "@/Server"
 import Datagram from "@/packets/Datagram"
 import EncapsulatedPacket from "@/packets/EncapsulatedPacket"
 import Protocol from "@/Protocol"
-import ConnectionRequest from "./packets/ConnectionRequest"
-import ConnectionRequestAccepted from "./packets/ConnectionRequestAccepted"
-import NAK from "./packets/NAK"
-import ACK from "./packets/ACK"
-import Packet from "./Packet"
+import ConnectionRequest from "@/packets/ConnectionRequest"
+import ConnectionRequestAccepted from "@/packets/ConnectionRequestAccepted"
+import NAK from "@/packets/NAK"
+import ACK from "@/packets/ACK"
+import Packet from "@/Packet"
+import Logger from "@/utils/Logger"
 
 export default class Client {
 
@@ -35,6 +36,8 @@ export default class Client {
 
   public tickInterval: NodeJS.Timeout
 
+  private logger: Logger
+
   constructor(address: Address, mtuSize: number, server: Server) {
     this.address = address
     this.mtuSize = mtuSize
@@ -42,14 +45,14 @@ export default class Client {
 
     this.packetQueue.needsBAndAs = true
 
+    this.logger = new Logger('Client')
+
     this.tickInterval = setInterval(() => {
       this.tick()
     }, 500);
   }
 
   tick() {
-    // console.log('tick!')
-
     if(this.ACKQueue.ids.length) {
       this.server.send(this.ACKQueue.encode(), this.address)
       this.ACKQueue.ids = []
@@ -129,7 +132,7 @@ export default class Client {
     }
 
     if(packet.needsACK) {
-      console.log('Needs ACK')
+      this.logger.debug('Packet needs ACK:', packet.getId())
     }
 
     this.packetQueue.packets.push(packet)
@@ -184,10 +187,8 @@ export default class Client {
 
     if(packet instanceof NAK) {
       packet.ids.forEach(id => {
-        console.log(id, this.recoveryQueue)
         const packet = this.recoveryQueue.get(id)
         if(packet) {
-          console.log(id)
           this.datagramQueue.push(packet)
           this.recoveryQueue.delete(id)
         }
@@ -204,8 +205,8 @@ export default class Client {
         this.server.removeClient(this)
         break;
       default:
-        console.log("Game packet not yet implemented:", packet.getId())
-        console.log(packet.getStream().buffer)
+        this.logger.error("Game packet not yet implemented:", packet.getId())
+        this.logger.error(packet.getStream().buffer)
     }
   }
 
