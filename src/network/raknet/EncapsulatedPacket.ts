@@ -1,7 +1,7 @@
-import Packet from "@/Packet"
+import Packet from "@/network/Packet"
 import { BinaryStream } from "@/utils"
-import Reliability from "@/Reliability"
-import Protocol from "@/packets/Protocol"
+import Reliability from "@/network/raknet/Reliability"
+import Protocol from "@/network/raknet/Protocol"
 
 export default class EncapsulatedPacket extends Packet {
 

@@ -1,4 +1,4 @@
-import Protocol from "@/packets/Protocol";
+import Protocol from "@/network/raknet/Protocol";
 import { BinaryStream } from "@/utils";
 import EncapsulatedPacket from "./EncapsulatedPacket";
 

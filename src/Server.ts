@@ -2,12 +2,12 @@ import dgram from 'dgram'
 import { EventEmitter } from 'events'
 
 import { Address, BinaryStream } from '@/utils'
-import Datagram from '@/packets/Datagram'
-import RakNet from '@/RakNet'
+import Datagram from '@/network/raknet/Datagram'
+import RakNet from '@/network/RakNet'
 import Client from '@/Client'
 import BitFlag from '@/utils/BitFlag'
-import NAK from '@/packets/NAK'
-import ACK from '@/packets/ACK'
+import NAK from '@/network/raknet/NAK'
+import ACK from '@/network/raknet/ACK'
 import Logger from '@/utils/Logger'
 
 export default class Server extends EventEmitter {

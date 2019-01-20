@@ -1,8 +1,8 @@
-import Packet from "@/Packet";
-import Protocol from "@/packets/Protocol";
-import EncapsulatedPacket from "./EncapsulatedPacket";
-import { BinaryStream } from "@/utils";
-import BitFlag from "@/utils/BitFlag";
+import Packet from "@/network/Packet"
+import Protocol from "@/network/raknet/Protocol"
+import EncapsulatedPacket from "./EncapsulatedPacket"
+import { BinaryStream } from "@/utils"
+import BitFlag from "@/utils/BitFlag"
 
 export default class Datagram extends Packet {
 
