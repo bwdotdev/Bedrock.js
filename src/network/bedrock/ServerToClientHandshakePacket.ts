@@ -1,8 +1,8 @@
 import EncapsulatedPacket from "@/packets/EncapsulatedPacket"
 import Packet from "@/game-packets/Protocol";
 
-export default class PlayStatusPacket extends EncapsulatedPacket {
+export default class ServerToClientHandshakePacket extends EncapsulatedPacket {
     constructor() {
-        super(Packet.PLAY_STATUS_PACKET)
+        super(Packet.SERVER_TO_CLIENT_HANDSHAKE_PACKET)
     }
 }
