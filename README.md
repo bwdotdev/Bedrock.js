@@ -22,4 +22,4 @@ Without the following repositories as a constant reference, this project would n
 
 #### Links
 - [Discord](https://discord.gg/W2KZBzC)
-- [Subscribe to PewDiePie](https://www.youtube.com/user/PewDiePie)
+- [Subscribe to PewDiePie](https://www.youtube.com/subscription_center?add_user=PewDiePie)
