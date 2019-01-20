@@ -1,5 +1,5 @@
-import EncapsulatedPacket from "@/packets/EncapsulatedPacket"
-import Packet from "@/game-packets/Protocol";
+import EncapsulatedPacket from "@/network/raknet/EncapsulatedPacket"
+import Packet from "@/network/bedrock/Protocol"
 
 export default class ServerToClientHandshakePacket extends EncapsulatedPacket {
     constructor() {
