@@ -3,7 +3,7 @@ sudo: false
 node_js:
   - "10.15.0"
 install:
-  - npm ci
+  - yarn
 script:
-  - npm run tslint
-  - npm run test
+  - yarn tslint
+  - yarn test
