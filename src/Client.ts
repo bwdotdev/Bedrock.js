@@ -12,9 +12,13 @@ import Logger from '@/utils/Logger'
 
 export default class Client {
 
+  private static TICK_INTERVAL = 500 // Milliseconds
+
   public id: number | null = null
 
   public address: Address
+
+  private lastUpdate: number = Date.now()
 
   public windowStart: number = 0
   public windowEnd: number = 2048
@@ -52,16 +56,19 @@ export default class Client {
 
     this.tickInterval = setInterval(() => {
       this.tick()
-    }, 500)
+    }, Client.TICK_INTERVAL)
   }
 
   public disconnect(reason: string = 'unknown reason') {
+    clearInterval(this.tickInterval)
     this.server.removeClient(this)
 
     this.logger.debug(`${this.address.ip}:${this.address.port} disconnected: "${reason}"`)
   }
 
   public handlePackets(datagram: Datagram) {
+    this.lastUpdate = Date.now()
+
     const packets = datagram.packets
 
     const diff = datagram.sequenceNumber - this.lastSequenceNumber
@@ -91,6 +98,8 @@ export default class Client {
   }
 
   public handlePacket(packet: Packet) {
+    this.lastUpdate = Date.now()
+
     if(packet instanceof EncapsulatedPacket) return this.handleEncapsulatedPacket(packet)
 
     if(packet instanceof ACK) {
@@ -116,6 +125,13 @@ export default class Client {
   }
 
   private tick() {
+    const time = Date.now()
+    if((this.lastUpdate + Client.TICK_INTERVAL) < time) {
+      this.disconnect('Connection timed out')
+
+      return
+    }
+
     if(this.ACKQueue.ids.length) {
       this.server.send(this.ACKQueue.encode(), this.address)
       this.ACKQueue.reset()
@@ -137,6 +153,14 @@ export default class Client {
         this.datagramQueue.splice(index, 1)
 
         i++
+      })
+    }
+
+    if(this.recoveryQueue.size) {
+      // TODO: Check time
+      this.recoveryQueue.forEach((pk, seq) => {
+        this.datagramQueue.push(pk)
+        this.recoveryQueue.delete(seq)
       })
     }
 
