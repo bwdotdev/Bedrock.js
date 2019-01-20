@@ -1,6 +1,6 @@
-import Protocol from "@/packets/Protocol";
-import { Address, AddressFamily } from "@/utils";
-import EncapsulatedPacket from "./EncapsulatedPacket";
+import Protocol from "@/network/raknet/Protocol"
+import { Address, AddressFamily } from "@/utils"
+import EncapsulatedPacket from "./EncapsulatedPacket"
 
 export default class ConnectionRequestAccepted extends EncapsulatedPacket {
 

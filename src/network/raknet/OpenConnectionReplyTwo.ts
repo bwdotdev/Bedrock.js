@@ -1,5 +1,5 @@
-import Packet from "@/Packet";
-import Protocol from "@/packets/Protocol";
+import Packet from "@/network/Packet"
+import Protocol from "@/network/raknet/Protocol"
 
 export default class OpenConnectionReplyTwo extends Packet {
 

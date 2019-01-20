@@ -1,6 +1,6 @@
-import Packet from "@/Packet"
+import Packet from "@/network/Packet"
 import { BinaryStream } from "@/utils"
-import Protocol from "@/packets/Protocol"
+import Protocol from "@/network/raknet/Protocol"
 
 export default class UnconnectedPing extends Packet {
 
