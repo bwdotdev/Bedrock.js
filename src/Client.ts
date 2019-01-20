@@ -1,14 +1,14 @@
-import { Address, BinaryStream } from "@/utils"
-import Server from "@/Server"
-import Datagram from "@/network/raknet/Datagram"
-import EncapsulatedPacket from "@/network/raknet/EncapsulatedPacket"
-import Protocol from "@/network/raknet/Protocol"
-import ConnectionRequest from "@/network/raknet/ConnectionRequest"
-import ConnectionRequestAccepted from "@/network/raknet/ConnectionRequestAccepted"
-import NAK from "@/network/raknet/NAK"
-import ACK from "@/network/raknet/ACK"
-import Packet from "@/network/Packet"
-import Logger from "@/utils/Logger"
+import Packet from '@/network/Packet'
+import ACK from '@/network/raknet/ACK'
+import ConnectionRequest from '@/network/raknet/ConnectionRequest'
+import ConnectionRequestAccepted from '@/network/raknet/ConnectionRequestAccepted'
+import Datagram from '@/network/raknet/Datagram'
+import EncapsulatedPacket from '@/network/raknet/EncapsulatedPacket'
+import NAK from '@/network/raknet/NAK'
+import Protocol from '@/network/raknet/Protocol'
+import Server from '@/Server'
+import { Address, BinaryStream } from '@/utils'
+import Logger from '@/utils/Logger'
 
 export default class Client {
 
@@ -24,8 +24,6 @@ export default class Client {
 
   public channelIndex: number[] = []
 
-  private server: Server
-
   public ACKQueue: ACK = new ACK()
   public NAKQueue: NAK = new NAK()
 
@@ -35,6 +33,8 @@ export default class Client {
   public recoveryQueue: Map<number, Datagram> = new Map()
 
   public tickInterval: NodeJS.Timeout
+
+  private server: Server
 
   private logger: Logger
 
@@ -49,7 +49,7 @@ export default class Client {
 
     this.tickInterval = setInterval(() => {
       this.tick()
-    }, 500);
+    }, 500)
   }
 
   public disconnect(reason: string = 'unknown reason') {
@@ -68,8 +68,8 @@ export default class Client {
       if(index !== -1) this.NAKQueue.ids.splice(index, 1)
 
       if(diff !== 1) {
-        for(let i = this.lastSequenceNumber; i < datagram.sequenceNumber; i++){
-          this.NAKQueue.ids.push(i);
+        for(let i = this.lastSequenceNumber; i < datagram.sequenceNumber; i++) {
+          this.NAKQueue.ids.push(i)
         }
       }
     }
@@ -88,8 +88,8 @@ export default class Client {
 
     if(packet instanceof ACK) {
       packet.ids.forEach(id => {
-        const packet = this.recoveryQueue.get(id)
-        if(packet) {
+        const pk = this.recoveryQueue.get(id)
+        if(pk) {
           this.recoveryQueue.delete(id)
         }
       })
@@ -97,9 +97,9 @@ export default class Client {
 
     if(packet instanceof NAK) {
       packet.ids.forEach(id => {
-        const packet = this.recoveryQueue.get(id)
-        if(packet) {
-          this.datagramQueue.push(packet)
+        const pk = this.recoveryQueue.get(id)
+        if(pk) {
+          this.datagramQueue.push(pk)
           this.recoveryQueue.delete(id)
         }
       })
@@ -118,9 +118,9 @@ export default class Client {
     }
 
     if(this.datagramQueue.length) {
-      let limit = 16
+      const limit = 16
       let i = 0
-      this.datagramQueue.forEach(async(datagram, index) => {
+      this.datagramQueue.forEach(async (datagram, index) => {
         if(i > limit) return
 
         this.recoveryQueue.set(datagram.sequenceNumber, datagram)
@@ -145,7 +145,7 @@ export default class Client {
       packet.orderIndex = this.channelIndex[packet.orderChannel]++
     }
 
-    let maxSize = this.mtuSize - 60
+    const maxSize = this.mtuSize - 60
 
     if(packet.getStream().buffer.length > maxSize) {
       const splitId = ++this.splitId % 65536
@@ -153,7 +153,10 @@ export default class Client {
       const splitCount = Math.ceil(packet.getStream().length / maxSize)
 
       while(!packet.getStream().feof()) {
-        const stream = new BinaryStream(packet.getStream().buffer.slice(packet.getStream().offset, packet.getStream().offset += maxSize))
+        const stream = new BinaryStream(packet.getStream().buffer.slice(
+          packet.getStream().offset,
+          packet.getStream().offset += maxSize,
+        ))
         const pk = new EncapsulatedPacket()
         pk.splitId = splitId
         pk.hasSplit = true
@@ -206,12 +209,12 @@ export default class Client {
     switch(packet.getId()) {
       case Protocol.CONNECTION_REQUEST:
         this.handleConnectionRequest(packet)
-        break;
+        break
       case Protocol.DISCONNECTION_NOTIFICATION:
         this.disconnect('Client disconnected')
-        break;
+        break
       default:
-        this.logger.error("Game packet not yet implemented:", packet.getId())
+        this.logger.error('Game packet not yet implemented:', packet.getId())
         this.logger.error(packet.getStream().buffer)
     }
   }

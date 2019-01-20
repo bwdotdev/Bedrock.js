@@ -1,5 +1,5 @@
-import { BinaryStream } from '@/utils'
 import Protocol from '@/network/raknet/Protocol'
+import { BinaryStream } from '@/utils'
 
 export default class Packet {
 

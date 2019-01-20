@@ -1,9 +1,9 @@
-import { Address, Round, AddressFamily } from '@/utils'
 import { Magic } from '@/network/raknet/Protocol'
+import { Address, AddressFamily, Round } from '@/utils'
 import Logger from '@/utils/Logger'
 
 export default class BinaryStream {
-  
+
   public buffer: Buffer
   public offset: number
 
@@ -27,31 +27,31 @@ export default class BinaryStream {
    *******************************
   */
 
-  read(len: number): Buffer {
+  public read(len: number): Buffer {
     return this.buffer.slice(this.offset, this.increaseOffset(len, true))
   }
 
-  reset() {
+  public reset() {
     this.buffer = Buffer.alloc(0)
     this.offset = 0
   }
 
-  setBuffer(buffer: Buffer = Buffer.alloc(0), offset: number = 0) {
+  public setBuffer(buffer: Buffer = Buffer.alloc(0), offset: number = 0) {
     this.buffer = buffer
     this.offset = offset
   }
 
-  increaseOffset(v: number, ret: boolean = false): number {
+  public increaseOffset(v: number, ret: boolean = false): number {
     return (ret === true ? (this.offset += v) : (this.offset += v) - v)
   }
 
-  append(buf: BinaryStream | Buffer | string): this {
+  public append(buf: BinaryStream | Buffer | string): this {
     if(buf instanceof BinaryStream) {
       return this.append(buf.buffer)
-    } 
-    
-    if (typeof buf === "string") {
-      buf = Buffer.from(buf, "hex")
+    }
+
+    if (typeof buf === 'string') {
+      buf = Buffer.from(buf, 'hex')
     }
 
     this.buffer = Buffer.concat([this.buffer, buf], this.buffer.length + buf.length)
@@ -60,15 +60,15 @@ export default class BinaryStream {
     return this
   }
 
-  getOffset(): number {
+  public getOffset(): number {
     return this.offset
   }
 
-  getBuffer(): Buffer {
+  public getBuffer(): Buffer {
     return this.buffer
   }
 
-  get length(): number {
+  public get length(): number {
     return this.buffer.length
   }
 
@@ -78,195 +78,195 @@ export default class BinaryStream {
    *******************************
   */
 
-  getRemainingBytes(): number {
+  public getRemainingBytes(): number {
     return this.buffer.length - this.offset
   }
 
-  readRemaining(): Buffer {
-    let buf = this.buffer.slice(this.offset)
+  public readRemaining(): Buffer {
+    const buf = this.buffer.slice(this.offset)
     this.offset = this.buffer.length
     return buf
   }
 
-  readBool(): boolean {
+  public readBool(): boolean {
     return this.readByte() !== 0x00
   }
 
-  writeBool(v: boolean): this {
+  public writeBool(v: boolean): this {
     this.writeByte(v === true ? 1 : 0)
     return this
   }
 
-  readByte(): number {
+  public readByte(): number {
     return this.getBuffer()[this.increaseOffset(1)]
   }
 
-  writeByte(v: number): this {
+  public writeByte(v: number): this {
     this.append(Buffer.from([v & 0xff]))
 
     return this
   }
 
-  readShort(): number {
+  public readShort(): number {
     return this.buffer.readUInt16BE(this.increaseOffset(2))
   }
 
-  writeShort(v: number): this {
-    let buf = Buffer.alloc(2)
+  public writeShort(v: number): this {
+    const buf = Buffer.alloc(2)
     buf.writeUInt16BE(v, 0)
     this.append(buf)
 
     return this
   }
 
-  readSignedShort(): number {
+  public readSignedShort(): number {
     return this.buffer.readInt16BE(this.increaseOffset(2))
   }
 
-  writeSignedShort(v: number): this {
-    let buf = Buffer.alloc(2)
+  public writeSignedShort(v: number): this {
+    const buf = Buffer.alloc(2)
     buf.writeInt16BE(v, 0)
     this.append(buf)
 
     return this
   }
 
-  readLShort(): number {
+  public readLShort(): number {
     return this.buffer.readUInt16LE(this.increaseOffset(2))
   }
 
-  writeLShort(v: number): this {
-    let buf = Buffer.alloc(2)
+  public writeLShort(v: number): this {
+    const buf = Buffer.alloc(2)
     buf.writeUInt16LE(v, 0)
     this.append(buf)
 
     return this
   }
 
-  readSignedLShort(): number {
+  public readSignedLShort(): number {
     return this.buffer.readInt16LE(this.increaseOffset(2))
   }
 
-  writeSignedLShort(v: number): this {
-    let buf = Buffer.alloc(2)
+  public writeSignedLShort(v: number): this {
+    const buf = Buffer.alloc(2)
     buf.writeInt16LE(v, 0)
     this.append(buf)
 
     return this
   }
 
-  readTriad(): number {
+  public readTriad(): number {
     return this.buffer.readUIntBE(this.increaseOffset(3), 3)
   }
 
-  writeTriad(v: number): this {
-    let buf = Buffer.alloc(3)
+  public writeTriad(v: number): this {
+    const buf = Buffer.alloc(3)
     buf.writeUIntBE(v, 0, 3)
     this.append(buf)
 
     return this
   }
 
-  readLTriad(): number {
+  public readLTriad(): number {
     return this.buffer.readUIntLE(this.increaseOffset(3), 3)
   }
 
-  writeLTriad(v: number): this {
-    let buf = Buffer.alloc(3)
+  public writeLTriad(v: number): this {
+    const buf = Buffer.alloc(3)
     buf.writeUIntLE(v, 0, 3)
     this.append(buf)
 
     return this
   }
 
-  readInt(): number {
+  public readInt(): number {
     return this.buffer.readInt32BE(this.increaseOffset(4))
   }
 
-  writeInt(v: number): this {
-    let buf = Buffer.alloc(4)
+  public writeInt(v: number): this {
+    const buf = Buffer.alloc(4)
     buf.writeInt32BE(v, 0)
     this.append(buf)
 
     return this
   }
 
-  readLInt(): number {
+  public readLInt(): number {
     return this.buffer.readInt32LE(this.increaseOffset(4))
   }
 
-  writeLInt(v: number): this {
-    let buf = Buffer.alloc(4)
+  public writeLInt(v: number): this {
+    const buf = Buffer.alloc(4)
     buf.writeInt32LE(v, 0)
     this.append(buf)
 
     return this
   }
 
-  readFloat(): number {
+  public readFloat(): number {
     return this.buffer.readFloatBE(this.increaseOffset(4))
   }
 
-  readRoundedFloat(accuracy: number): number {
+  public readRoundedFloat(accuracy: number): number {
     return Round(this.readFloat(), accuracy)
   }
 
-  writeFloat(v: number): this {
-    let buf = Buffer.alloc(8)
-    let bytes = buf.writeFloatBE(v, 0)
+  public writeFloat(v: number): this {
+    const buf = Buffer.alloc(8)
+    const bytes = buf.writeFloatBE(v, 0)
     this.append(buf.slice(0, bytes))
 
     return this
   }
 
-  readLFloat(): number {
+  public readLFloat(): number {
     return this.buffer.readFloatLE(this.increaseOffset(4))
   }
 
-  readRoundedLFloat(accuracy: number): number {
+  public readRoundedLFloat(accuracy: number): number {
     return Round(this.readLFloat(), accuracy)
   }
 
-  writeLFloat(v: number): this {
-    let buf = Buffer.alloc(8)
-    let bytes = buf.writeFloatLE(v, 0)
+  public writeLFloat(v: number): this {
+    const buf = Buffer.alloc(8)
+    const bytes = buf.writeFloatLE(v, 0)
     this.append(buf.slice(0, bytes))
 
     return this
   }
 
-  readDouble(): number {
+  public readDouble(): number {
     return this.buffer.readDoubleBE(this.increaseOffset(8))
   }
 
-  writeDouble(v: number): this {
-    let buf = Buffer.alloc(8)
+  public writeDouble(v: number): this {
+    const buf = Buffer.alloc(8)
     buf.writeDoubleBE(v, 0)
     this.append(buf)
 
     return this
   }
 
-  readLDouble(): number {
+  public readLDouble(): number {
     return this.buffer.readDoubleLE(this.increaseOffset(8))
   }
 
-  writeLDouble(v: number): this {
-    let buf = Buffer.alloc(8)
+  public writeLDouble(v: number): this {
+    const buf = Buffer.alloc(8)
     buf.writeDoubleLE(v, 0)
     this.append(buf)
 
     return this
   }
 
-  readLong(): number {
+  public readLong(): number {
     return (this.buffer.readUInt32BE(this.increaseOffset(4)) << 8) + this.buffer.readUInt32BE(this.increaseOffset(4))
   }
 
-  writeLong(v: number): this {
-    let MAX_UINT32 = 0xFFFFFFFF
+  public writeLong(v: number): this {
+    const MAX_UINT32 = 0xFFFFFFFF
 
-    let buf = Buffer.alloc(8)
+    const buf = Buffer.alloc(8)
     buf.writeUInt32BE((~~(v / MAX_UINT32)), 0)
     buf.writeUInt32BE((v & MAX_UINT32), 4)
     this.append(buf)
@@ -274,14 +274,14 @@ export default class BinaryStream {
     return this
   }
 
-  readLLong(): number {
+  public readLLong(): number {
     return this.buffer.readUInt32LE(0) + (this.buffer.readUInt32LE(4) << 8)
   }
 
-  writeLLong(v: number): this {
-    let MAX_UINT32 = 0xFFFFFFFF
+  public writeLLong(v: number): this {
+    const MAX_UINT32 = 0xFFFFFFFF
 
-    let buf = Buffer.alloc(8)
+    const buf = Buffer.alloc(8)
     buf.writeUInt32LE((v & MAX_UINT32), 0)
     buf.writeUInt32LE((~~(v / MAX_UINT32)), 4)
     this.append(buf)
@@ -289,11 +289,11 @@ export default class BinaryStream {
     return this
   }
 
-  readUnsignedVarInt(): number {
+  public readUnsignedVarInt(): number {
     let value = 0
 
     for (let i = 0; i <= 35; i += 7) {
-      let b = this.readByte()
+      const b = this.readByte()
       value |= ((b & 0x7f) << i)
 
       if ((b & 0x80) === 0) {
@@ -304,8 +304,8 @@ export default class BinaryStream {
     return 0
   }
 
-  writeUnsignedVarInt(v: number): this {
-    let stream = new BinaryStream()
+  public writeUnsignedVarInt(v: number): this {
+    const stream = new BinaryStream()
 
     for (let i = 0; i < 5; i++) {
       if ((v >> 7) !== 0) {
@@ -322,21 +322,21 @@ export default class BinaryStream {
     return this
   }
 
-  readVarInt(): number {
-    let raw = this.readUnsignedVarInt()
-    let tmp = (((raw << 63) >> 63) ^ raw) >> 1
+  public readVarInt(): number {
+    const raw = this.readUnsignedVarInt()
+    const tmp = (((raw << 63) >> 63) ^ raw) >> 1
     return tmp ^ (raw & (1 << 63))
   }
 
-  writeVarInt(v: number): this {
+  public writeVarInt(v: number): this {
     v <<= 32 >> 32
     return this.writeUnsignedVarInt((v << 1) ^ (v >> 31))
   }
 
-  readUnsignedVarLong(): number {
+  public readUnsignedVarLong(): number {
     let value = 0
     for (let i = 0; i <= 63; i += 7) {
-      let b = this.readByte()
+      const b = this.readByte()
       value |= ((b & 0x7f) << i)
 
       if ((b & 0x80) === 0) {
@@ -346,7 +346,7 @@ export default class BinaryStream {
     return 0
   }
 
-  writeUnsignedVarLong(v: number): this {
+  public writeUnsignedVarLong(v: number): this {
     for (let i = 0; i < 10; i++) {
       if ((v >> 7) !== 0) {
         this.writeByte(v | 0x80)
@@ -360,21 +360,21 @@ export default class BinaryStream {
     return this
   }
 
-  readVarLong(): number {
-    let raw = this.readUnsignedVarLong()
-    let tmp = (((raw << 63) >> 63) ^ raw) >> 1
+  public readVarLong(): number {
+    const raw = this.readUnsignedVarLong()
+    const tmp = (((raw << 63) >> 63) ^ raw) >> 1
     return tmp ^ (raw & (1 << 63))
   }
 
-  writeVarLong(v: number): this {
+  public writeVarLong(v: number): this {
     return this.writeUnsignedVarLong((v << 1) ^ (v >> 63))
   }
 
-  feof(): boolean {
-    return typeof this.getBuffer()[this.offset] === "undefined"
+  public feof(): boolean {
+    return typeof this.getBuffer()[this.offset] === 'undefined'
   }
 
-  readAddress(): Address {
+  public readAddress(): Address {
     let ip, port, family
     switch (this.readByte()) {
       default:
@@ -384,50 +384,50 @@ export default class BinaryStream {
         for (let i = 0; i < 4; i++) {
           ip.push(this.readByte() & 0xff)
         }
-        ip = ip.join(".")
+        ip = ip.join('.')
         port = this.readShort()
         break
     }
     return { ip, port, family }
   }
 
-  writeAddress(address: Address): this {
+  public writeAddress(address: Address): this {
     this.writeByte(address.family)
     switch (address.family) {
       case AddressFamily.IPV4:
-        address.ip.split(".", 4).forEach(b => this.writeByte((Number(b)) & 0xff))
+        address.ip.split('.', 4).forEach(b => this.writeByte((Number(b)) & 0xff))
         this.writeShort(address.port)
         break
       case AddressFamily.IPV6:
         this.logger.error('IPV6 is not yet supported')
-        break;
+        break
       default:
         this.logger.error('ERR -> Unknown address family:', address.family)
     }
     return this
   }
 
-  writeString(v: string): this {
-    this.append(Buffer.from(v, "utf8"))
+  public writeString(v: string): this {
+    this.append(Buffer.from(v, 'utf8'))
     return this
   }
 
-  readMagic(): Buffer {
+  public readMagic(): Buffer {
     return this.buffer.slice(this.offset, this.increaseOffset(16, true))
   }
 
-  writeMagic() {
+  public writeMagic() {
     this.append(Buffer.from(Magic, 'binary'))
     return this
   }
 
-  flip(): this {
+  public flip(): this {
     this.offset = 0
     return this
   }
 
-  toHex(spaces: boolean = false): string {
-    let hex = this.buffer.toString("hex")
-    return spaces ? hex.split(/(..)/).filter(v => v !== "").join(" ") : hex
+  public toHex(spaces: boolean = false): string {
+    const hex = this.buffer.toString('hex')
+    return spaces ? hex.split(/(..)/).filter(v => v !== '').join(' ') : hex
   }
 }

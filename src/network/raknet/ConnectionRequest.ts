@@ -1,6 +1,6 @@
-import Protocol from "@/network/raknet/Protocol";
-import { BinaryStream } from "@/utils";
-import EncapsulatedPacket from "./EncapsulatedPacket";
+import Protocol from '@/network/raknet/Protocol'
+import { BinaryStream } from '@/utils'
+import EncapsulatedPacket from './EncapsulatedPacket'
 
 export default class ConnectionRequest extends EncapsulatedPacket {
 

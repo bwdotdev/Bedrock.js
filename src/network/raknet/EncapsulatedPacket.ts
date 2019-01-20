@@ -1,90 +1,13 @@
-import Packet from "@/network/Packet"
-import { BinaryStream } from "@/utils"
-import Reliability from "@/network/raknet/Reliability"
-import Protocol from "@/network/raknet/Protocol"
+import Packet from '@/network/Packet'
+import Protocol from '@/network/raknet/Protocol'
+import Reliability from '@/network/raknet/Reliability'
+import { BinaryStream } from '@/utils'
 
 export default class EncapsulatedPacket extends Packet {
 
-  public reliability: number = 0
-
-  public length: number = 0
-
-  public messageIndex: number = 0
-
-  public hasSplit: boolean = false
-  public splitCount: number = 0
-  public splitId: number = 0
-  public splitIndex: number = 0
-
-  public sequenceIndex: number = 0
-
-  public orderIndex: number = 0
-  public orderChannel: number = 0
-
-  public needsACK: boolean = false
-
-  constructor(id: number = Protocol.DATA_PACKET_4, stream?: BinaryStream) {
-    super(id, stream)
-  }
-
-  isReliable() {
-    return (
-      this.reliability === Reliability.Reliable ||
-      this.reliability === Reliability.ReliableOrdered ||
-      this.reliability === Reliability.ReliableSequenced ||
-      this.reliability === Reliability.ReliableACK ||
-      this.reliability === Reliability.ReliableOrderedACK
-    )
-  }
-
-  isSequenced() {
-    return (
-      this.reliability === Reliability.UnreliableSequenced ||
-      this.reliability === Reliability.ReliableSequenced
-    )
-  }
-
-  isOrdered() {
-    return (
-      this.reliability === Reliability.ReliableOrdered ||
-      this.reliability === Reliability.ReliableOrderedACK
-    )
-  }
-
-  isSequencedOrOrdered() {
-    return this.isSequenced() || this.isOrdered()
-  }
-
-  toBinary() {
-    const stream = new BinaryStream()
-    stream.writeByte((this.reliability << 5) | (this.hasSplit ? 0x10 : 0))
-    stream.writeShort(stream.length << 3)
-
-    if (this.isReliable()) {
-      stream.writeLTriad(this.messageIndex)
-    }
-
-    if (this.isSequenced()) {
-      stream.writeLTriad(this.sequenceIndex);
-    }
-
-    if (this.isSequencedOrOrdered()) {
-      stream.writeLTriad(this.orderIndex);
-      stream.writeByte(this.orderChannel);
-    }
-
-    if (this.hasSplit) {
-      stream.writeInt(this.splitCount);
-      stream.writeShort(this.splitId);
-      stream.writeInt(this.splitIndex);
-    }
-
-    const packetStream = this.encode()
-
-    return stream.append(packetStream)
-  }
-
-  static fromEncapsulated<T extends EncapsulatedPacket>(this: { new(stream: BinaryStream): T }, encapsulated: EncapsulatedPacket): T {
+  public static fromEncapsulated<T extends EncapsulatedPacket>(
+    this: new(stream: BinaryStream) => T, encapsulated: EncapsulatedPacket,
+  ): T {
     const packet = new this(encapsulated.getStream())
     packet.reliability = encapsulated.reliability
     packet.length = encapsulated.length
@@ -100,7 +23,7 @@ export default class EncapsulatedPacket extends Packet {
     return packet
   }
 
-  static fromBinary(stream: BinaryStream) {
+  public static fromBinary(stream: BinaryStream) {
     const flags = stream.readByte()
     const packet = new EncapsulatedPacket(flags)
 
@@ -132,6 +55,85 @@ export default class EncapsulatedPacket extends Packet {
     stream.offset += packet.length
 
     return packet
+  }
+
+  public reliability: number = 0
+
+  public length: number = 0
+
+  public messageIndex: number = 0
+
+  public hasSplit: boolean = false
+  public splitCount: number = 0
+  public splitId: number = 0
+  public splitIndex: number = 0
+
+  public sequenceIndex: number = 0
+
+  public orderIndex: number = 0
+  public orderChannel: number = 0
+
+  public needsACK: boolean = false
+
+  constructor(id: number = Protocol.DATA_PACKET_4, stream?: BinaryStream) {
+    super(id, stream)
+  }
+
+  public isReliable() {
+    return (
+      this.reliability === Reliability.Reliable ||
+      this.reliability === Reliability.ReliableOrdered ||
+      this.reliability === Reliability.ReliableSequenced ||
+      this.reliability === Reliability.ReliableACK ||
+      this.reliability === Reliability.ReliableOrderedACK
+    )
+  }
+
+  public isSequenced() {
+    return (
+      this.reliability === Reliability.UnreliableSequenced ||
+      this.reliability === Reliability.ReliableSequenced
+    )
+  }
+
+  public isOrdered() {
+    return (
+      this.reliability === Reliability.ReliableOrdered ||
+      this.reliability === Reliability.ReliableOrderedACK
+    )
+  }
+
+  public isSequencedOrOrdered() {
+    return this.isSequenced() || this.isOrdered()
+  }
+
+  public toBinary() {
+    const stream = new BinaryStream()
+    stream.writeByte((this.reliability << 5) | (this.hasSplit ? 0x10 : 0))
+    stream.writeShort(stream.length << 3)
+
+    if (this.isReliable()) {
+      stream.writeLTriad(this.messageIndex)
+    }
+
+    if (this.isSequenced()) {
+      stream.writeLTriad(this.sequenceIndex)
+    }
+
+    if (this.isSequencedOrOrdered()) {
+      stream.writeLTriad(this.orderIndex)
+      stream.writeByte(this.orderChannel)
+    }
+
+    if (this.hasSplit) {
+      stream.writeInt(this.splitCount)
+      stream.writeShort(this.splitId)
+      stream.writeInt(this.splitIndex)
+    }
+
+    const packetStream = this.encode()
+
+    return stream.append(packetStream)
   }
 
 }

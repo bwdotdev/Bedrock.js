@@ -1,10 +1,33 @@
-import Packet from "@/network/Packet"
-import Protocol from "@/network/raknet/Protocol"
-import EncapsulatedPacket from "./EncapsulatedPacket"
-import { BinaryStream } from "@/utils"
-import BitFlag from "@/utils/BitFlag"
+import Packet from '@/network/Packet'
+import Protocol from '@/network/raknet/Protocol'
+import { BinaryStream } from '@/utils'
+import BitFlag from '@/utils/BitFlag'
+import EncapsulatedPacket from './EncapsulatedPacket'
 
 export default class Datagram extends Packet {
+
+  public static fromBinary(stream: BinaryStream): Datagram {
+    const flags = stream.readByte()
+    const datagram = new Datagram([], flags)
+
+    datagram.packetPair = (flags & BitFlag.PacketPair) > 0
+    datagram.continuousSend = (flags & BitFlag.ContinuousSend) > 0
+    datagram.needsBAndAs = (flags & BitFlag.NeedsBAndS) > 0
+
+    datagram.sequenceNumber = stream.readLTriad()
+
+    while (!stream.feof()) {
+      const packet = EncapsulatedPacket.fromBinary(stream)
+
+      if (!packet.getStream().length) {
+        break
+      }
+
+      datagram.packets.push(packet)
+    }
+
+    return datagram
+  }
 
   public packets: EncapsulatedPacket[]
 
@@ -33,29 +56,6 @@ export default class Datagram extends Packet {
   protected encodeBody() {
     this.getStream().writeLTriad(this.sequenceNumber)
     this.packets.forEach(packet => this.getStream().append(packet.toBinary()))
-  }
-
-  static fromBinary(stream: BinaryStream): Datagram {
-    const flags = stream.readByte()
-    const datagram = new Datagram([], flags)
-
-    datagram.packetPair = (flags & BitFlag.PacketPair) > 0;
-    datagram.continuousSend = (flags & BitFlag.ContinuousSend) > 0;
-    datagram.needsBAndAs = (flags & BitFlag.NeedsBAndS) > 0;
-
-    datagram.sequenceNumber = stream.readLTriad()
-
-    while (!stream.feof()) {
-      let packet = EncapsulatedPacket.fromBinary(stream);
-
-      if (!packet.getStream().length) {
-        break;
-      }
-
-      datagram.packets.push(packet);
-    }
-
-    return datagram
   }
 
 }

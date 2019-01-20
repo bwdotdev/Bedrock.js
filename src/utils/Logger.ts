@@ -9,10 +9,6 @@ export default class Logger {
     this.moduleName = moduleName
   }
 
-  private print(type: string, ...args: any) {
-    console.log(`[${chalk.magenta(this.systemName)}.${chalk.cyan(this.moduleName)}] [${type}]`, ...args)
-  }
-
   public debug(...args: any) {
     this.print(chalk.green('DBG'), ...args)
   }
@@ -27,6 +23,11 @@ export default class Logger {
 
   public warn(...args: any) {
     this.print(chalk.keyword('orange')('WRN'), ...args)
+  }
+
+  private print(type: string, ...args: any) {
+    // tslint:disable-next-line:no-console
+    console.log(`[${chalk.magenta(this.systemName)}.${chalk.cyan(this.moduleName)}] [${type}]`, ...args)
   }
 
 }

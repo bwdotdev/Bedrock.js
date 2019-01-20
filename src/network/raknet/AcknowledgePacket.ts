@@ -1,6 +1,6 @@
-import Packet from "@/network/Packet"
-import Protocol from "@/network/raknet/Protocol"
-import { BinaryStream } from "@/utils"
+import Packet from '@/network/Packet'
+import Protocol from '@/network/raknet/Protocol'
+import { BinaryStream } from '@/utils'
 
 export default class AcknowledgePacket extends Packet {
 

@@ -1,15 +1,15 @@
-import Server from "@/Server"
-import { BinaryStream, Address } from "@/utils"
-import Protocol from "@/network/raknet/Protocol"
-import UnconnectedPing from "@/network/raknet/UnconnectedPing"
-import UnconnectedPong from "@/network/raknet/UnconnectedPong"
-import IncompatibleProtocol from "@/network/raknet/IncompatibleProtocol"
-import OpenConnectionRequestOne from "@/network/raknet/OpenConnectionRequestOne"
-import OpenConnectionReplyOne from "@/network/raknet/OpenConnectionReplyOne"
-import OpenConnectionRequestTwo from "@/network/raknet/OpenConnectionRequestTwo"
-import OpenConnectionReplyTwo from "@/network/raknet/OpenConnectionReplyTwo"
-import Client from "@/Client"
-import Logger from "@/utils/Logger"
+import Client from '@/Client'
+import IncompatibleProtocol from '@/network/raknet/IncompatibleProtocol'
+import OpenConnectionReplyOne from '@/network/raknet/OpenConnectionReplyOne'
+import OpenConnectionReplyTwo from '@/network/raknet/OpenConnectionReplyTwo'
+import OpenConnectionRequestOne from '@/network/raknet/OpenConnectionRequestOne'
+import OpenConnectionRequestTwo from '@/network/raknet/OpenConnectionRequestTwo'
+import Protocol from '@/network/raknet/Protocol'
+import UnconnectedPing from '@/network/raknet/UnconnectedPing'
+import UnconnectedPong from '@/network/raknet/UnconnectedPong'
+import Server from '@/Server'
+import { Address, BinaryStream } from '@/utils'
+import Logger from '@/utils/Logger'
 
 export default class RakNet {
 
@@ -23,7 +23,7 @@ export default class RakNet {
     this.logger = new Logger('RakNet')
   }
 
-  handleUnconnectedPacket(stream: BinaryStream, recipient: Address) {
+  public handleUnconnectedPacket(stream: BinaryStream, recipient: Address) {
     const id = stream.buffer[0]
 
     switch (id) {
@@ -41,13 +41,13 @@ export default class RakNet {
     }
   }
 
-  handleUnconnectedPing(stream: BinaryStream, recipient: Address) {
+  public handleUnconnectedPing(stream: BinaryStream, recipient: Address) {
     const ping = new UnconnectedPing(stream)
     const pong = new UnconnectedPong(ping.pingId, this.server.getName(), this.server.getMaxPlayers())
     this.server.send(pong.encode(), recipient)
   }
 
-  handleOpenConnectionRequestOne(stream: BinaryStream, recipient: Address) {
+  public handleOpenConnectionRequestOne(stream: BinaryStream, recipient: Address) {
     const req = new OpenConnectionRequestOne(stream)
 
     if (req.protocol !== Protocol.PROTOCOL_VERSION) {
@@ -59,7 +59,7 @@ export default class RakNet {
     }
   }
 
-  handleOpenConnectionRequestTwo(stream: BinaryStream, recipient: Address) {
+  public handleOpenConnectionRequestTwo(stream: BinaryStream, recipient: Address) {
     const req = new OpenConnectionRequestTwo(stream)
 
     const packet = new OpenConnectionReplyTwo(req.port, req.mtuSize)

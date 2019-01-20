@@ -1,15 +1,15 @@
 import dgram from 'dgram'
 import { EventEmitter } from 'events'
 
-import { Address, BinaryStream } from '@/utils'
-import Datagram from '@/network/raknet/Datagram'
-import RakNet from '@/network/RakNet'
 import Client from '@/Client'
-import BitFlag from '@/utils/BitFlag'
-import NAK from '@/network/raknet/NAK'
-import ACK from '@/network/raknet/ACK'
-import Logger from '@/utils/Logger'
 import { ServerOptions } from '@/interfaces'
+import RakNet from '@/network/RakNet'
+import ACK from '@/network/raknet/ACK'
+import Datagram from '@/network/raknet/Datagram'
+import NAK from '@/network/raknet/NAK'
+import { Address, BinaryStream } from '@/utils'
+import BitFlag from '@/utils/BitFlag'
+import Logger from '@/utils/Logger'
 
 export default class Server extends EventEmitter {
 
@@ -41,7 +41,7 @@ export default class Server extends EventEmitter {
 
     this.clients = []
 
-    this.socket = dgram.createSocket("udp4")
+    this.socket = dgram.createSocket('udp4')
 
     this.logger = new Logger('Server')
 
@@ -74,7 +74,8 @@ export default class Server extends EventEmitter {
   }
 
   public removeClient(client: Client) {
-    const index = this.clients.findIndex(c => c.address.ip === client.address.ip && c.address.port === client.address.port)
+    const index = this.clients
+      .findIndex(c => c.address.ip === client.address.ip && c.address.port === client.address.port)
     if(index === -1) return
 
     this.clients.splice(index, 1)
@@ -84,21 +85,21 @@ export default class Server extends EventEmitter {
     this.socket.send(
       stream.buffer,
       to.port,
-      to.ip
+      to.ip,
     )
   }
 
   private startListeners() {
-    this.socket.on("message", (message: Buffer, recipient: dgram.RemoteInfo) => {
+    this.socket.on('message', (message: Buffer, recipient: dgram.RemoteInfo) => {
       if (!message.length) return
 
       const stream = new BinaryStream(message)
 
       try {
         this.handleOnMessage(stream, {
+          family: recipient.family === 'IPv4' ? 4 : 6,
           ip: recipient.address,
           port: recipient.port,
-          family: recipient.family === 'IPv4' ? 4 : 6
         })
       } catch (e) {
         this.logger.error(e.message)
@@ -106,11 +107,11 @@ export default class Server extends EventEmitter {
       }
     })
 
-    this.socket.on("error", (err: Error) => {
+    this.socket.on('error', (err: Error) => {
       this.logger.error(err)
     })
 
-    this.socket.on("listening", () => {
+    this.socket.on('listening', () => {
       this.logger.info(`Bedrock.js listening on ${this.ip}:${this.port}`)
     })
   }
