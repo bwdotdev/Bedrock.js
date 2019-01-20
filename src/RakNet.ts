@@ -66,6 +66,9 @@ export default class RakNet {
     if(!this.server.hasClient(recipient)) {
       const client = new Client(recipient, req.mtuSize, this.server)
       this.server.addClient(client)
+
+      this.logger.debug('Created client for', `${client.address.ip}:${client.address.port}`)
+
       this.server.send(packet.encode(), recipient)
     }
   }

@@ -52,7 +52,61 @@ export default class Client {
     }, 500);
   }
 
-  tick() {
+  public disconnect(reason: string = 'unknown reason') {
+    this.server.removeClient(this)
+
+    this.logger.debug(`${this.address.ip}:${this.address.port} disconnected: "${reason}"`)
+  }
+
+  public handlePackets(datagram: Datagram) {
+    const packets = datagram.packets
+
+    const diff = datagram.sequenceNumber - this.lastSequenceNumber
+
+    if(this.NAKQueue.ids.length) {
+      const index = this.NAKQueue.ids.findIndex(i => i === datagram.sequenceNumber)
+      if(index !== -1) this.NAKQueue.ids.splice(index, 1)
+
+      if(diff !== 1) {
+        for(let i = this.lastSequenceNumber; i < datagram.sequenceNumber; i++){
+          this.NAKQueue.ids.push(i);
+        }
+      }
+    }
+
+    this.ACKQueue.ids.push(datagram.sequenceNumber)
+
+    if(diff >= 1) {
+      this.lastSequenceNumber = datagram.sequenceNumber
+    }
+
+    packets.forEach(packet => this.handlePacket(packet))
+  }
+
+  public handlePacket(packet: Packet) {
+    if(packet instanceof EncapsulatedPacket) return this.handleEncapsulatedPacket(packet)
+
+    if(packet instanceof ACK) {
+      packet.ids.forEach(id => {
+        const packet = this.recoveryQueue.get(id)
+        if(packet) {
+          this.recoveryQueue.delete(id)
+        }
+      })
+    }
+
+    if(packet instanceof NAK) {
+      packet.ids.forEach(id => {
+        const packet = this.recoveryQueue.get(id)
+        if(packet) {
+          this.datagramQueue.push(packet)
+          this.recoveryQueue.delete(id)
+        }
+      })
+    }
+  }
+
+  private tick() {
     if(this.ACKQueue.ids.length) {
       this.server.send(this.ACKQueue.encode(), this.address)
       this.ACKQueue.ids = []
@@ -82,7 +136,7 @@ export default class Client {
     }
   }
 
-  queueEncapsulatedPacket(packet: EncapsulatedPacket, immediate: boolean = false) {
+  private queueEncapsulatedPacket(packet: EncapsulatedPacket, immediate: boolean = false) {
     if(packet.isReliable()) {
       packet.messageIndex = this.messageIndex++
     }
@@ -125,7 +179,7 @@ export default class Client {
     }
   }
 
-  addToQueue(packet: EncapsulatedPacket, immediate: boolean = false) {
+  private addToQueue(packet: EncapsulatedPacket, immediate: boolean = false) {
     const length = this.packetQueue.packets.length
     if((length + packet.getStream().length) > (this.mtuSize - 36)) {
       this.sendPacketQueue()
@@ -148,61 +202,13 @@ export default class Client {
     this.packetQueue.packets = []
   }
 
-  handlePackets(datagram: Datagram) {
-    const packets = datagram.packets
-
-    const diff = datagram.sequenceNumber - this.lastSequenceNumber
-
-    if(this.NAKQueue.ids.length) {
-      const index = this.NAKQueue.ids.findIndex(i => i === datagram.sequenceNumber)
-      if(index !== -1) this.NAKQueue.ids.splice(index, 1)
-
-      if(diff !== 1) {
-        for(let i = this.lastSequenceNumber; i < datagram.sequenceNumber; i++){
-          this.NAKQueue.ids.push(i);
-        }
-      }
-    }
-
-    this.ACKQueue.ids.push(datagram.sequenceNumber)
-
-    if(diff >= 1) {
-      this.lastSequenceNumber = datagram.sequenceNumber
-    }
-
-    packets.forEach(packet => this.handlePacket(packet))
-  }
-
-  handlePacket(packet: Packet) {
-    if(packet instanceof EncapsulatedPacket) return this.handleEncapsulatedPacket(packet)
-
-    if(packet instanceof ACK) {
-      packet.ids.forEach(id => {
-        const packet = this.recoveryQueue.get(id)
-        if(packet) {
-          this.recoveryQueue.delete(id)
-        }
-      })
-    }
-
-    if(packet instanceof NAK) {
-      packet.ids.forEach(id => {
-        const packet = this.recoveryQueue.get(id)
-        if(packet) {
-          this.datagramQueue.push(packet)
-          this.recoveryQueue.delete(id)
-        }
-      })
-    }
-  }
-
-  handleEncapsulatedPacket(packet: EncapsulatedPacket) {
+  private handleEncapsulatedPacket(packet: EncapsulatedPacket) {
     switch(packet.getId()) {
       case Protocol.CONNECTION_REQUEST:
         this.handleConnectionRequest(packet)
         break;
       case Protocol.DISCONNECTION_NOTIFICATION:
-        this.server.removeClient(this)
+        this.disconnect('Client disconnected')
         break;
       default:
         this.logger.error("Game packet not yet implemented:", packet.getId())
@@ -210,7 +216,7 @@ export default class Client {
     }
   }
 
-  handleConnectionRequest(packet: EncapsulatedPacket) {
+  private handleConnectionRequest(packet: EncapsulatedPacket) {
     const request = ConnectionRequest.fromEncapsulated(packet)
 
     this.id = request.clientId
