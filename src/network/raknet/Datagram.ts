@@ -45,6 +45,11 @@ export default class Datagram extends Packet {
     this.packets = packets
   }
 
+  public reset() {
+    this.packets = []
+    this.setStream(new BinaryStream())
+  }
+
   protected encodeHeader() {
     // if(this.packetPair) this.headerFlags |= BitFlag.PacketPair
     // if(this.continuousSend) this.headerFlags |= BitFlag.ContinuousSend

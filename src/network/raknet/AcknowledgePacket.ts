@@ -33,6 +33,11 @@ export default class AcknowledgePacket extends Packet {
     }
   }
 
+  public reset() {
+    this.ids = []
+    this.setStream(new BinaryStream())
+  }
+
   protected encodeBody() {
     const stream = new BinaryStream()
     const ids = this.ids.sort((a, b) => a - b)

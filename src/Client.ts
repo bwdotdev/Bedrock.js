@@ -16,10 +16,13 @@ export default class Client {
 
   public address: Address
 
+  public windowStart: number = 0
+  public windowEnd: number = 2048
   public mtuSize: number
   public messageIndex: number = 0
   public sequenceNumber: number = 0
-  public lastSequenceNumber: number = 0
+  public lastSequenceNumber: number = -1
+  public highestSequenceNumberThisTick: number = -1
   public splitId: number = 0
 
   public channelIndex: number[] = []
@@ -63,12 +66,16 @@ export default class Client {
 
     const diff = datagram.sequenceNumber - this.lastSequenceNumber
 
+    this.logger.debug('Datagram diff:', diff)
+    this.logger.debug(datagram.sequenceNumber, this.lastSequenceNumber)
+
     if(this.NAKQueue.ids.length) {
       const index = this.NAKQueue.ids.findIndex(i => i === datagram.sequenceNumber)
       if(index !== -1) this.NAKQueue.ids.splice(index, 1)
 
       if(diff !== 1) {
-        for(let i = this.lastSequenceNumber; i < datagram.sequenceNumber; i++) {
+        for(let i = this.lastSequenceNumber + 1; i < datagram.sequenceNumber; i++) {
+          this.logger.debug('Adding to NAK queue:', i)
           this.NAKQueue.ids.push(i)
         }
       }
@@ -80,13 +87,14 @@ export default class Client {
       this.lastSequenceNumber = datagram.sequenceNumber
     }
 
-    packets.forEach(packet => this.handlePacket(packet))
+    packets.forEach(packet => this.handleEncapsulatedPacket(packet))
   }
 
   public handlePacket(packet: Packet) {
     if(packet instanceof EncapsulatedPacket) return this.handleEncapsulatedPacket(packet)
 
     if(packet instanceof ACK) {
+      this.logger.debug('Got ACK:', packet.ids, '- Recovery queue:', this.recoveryQueue)
       packet.ids.forEach(id => {
         const pk = this.recoveryQueue.get(id)
         if(pk) {
@@ -96,6 +104,7 @@ export default class Client {
     }
 
     if(packet instanceof NAK) {
+      this.logger.debug('Got NAK:', packet.ids, '- Recovery queue:', this.recoveryQueue)
       packet.ids.forEach(id => {
         const pk = this.recoveryQueue.get(id)
         if(pk) {
@@ -109,12 +118,12 @@ export default class Client {
   private tick() {
     if(this.ACKQueue.ids.length) {
       this.server.send(this.ACKQueue.encode(), this.address)
-      this.ACKQueue.ids = []
+      this.ACKQueue.reset()
     }
 
     if(this.NAKQueue.ids.length) {
       this.server.send(this.NAKQueue.encode(), this.address)
-      this.NAKQueue.ids = []
+      this.NAKQueue.reset()
     }
 
     if(this.datagramQueue.length) {
@@ -123,7 +132,7 @@ export default class Client {
       this.datagramQueue.forEach(async (datagram, index) => {
         if(i > limit) return
 
-        this.recoveryQueue.set(datagram.sequenceNumber, datagram)
+        // this.recoveryQueue.set(datagram.sequenceNumber, datagram)
         this.server.send(datagram.encode(), this.address)
         this.datagramQueue.splice(index, 1)
 
@@ -200,9 +209,10 @@ export default class Client {
   }
 
   private sendPacketQueue() {
-    this.packetQueue.sequenceNumber++
+    this.packetQueue.sequenceNumber = this.sequenceNumber++
+    this.recoveryQueue.set(this.packetQueue.sequenceNumber, this.packetQueue)
     this.server.send(this.packetQueue.encode(), this.address)
-    this.packetQueue.packets = []
+    this.packetQueue.reset()
   }
 
   private handleEncapsulatedPacket(packet: EncapsulatedPacket) {
