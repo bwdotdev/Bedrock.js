@@ -4,7 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node ./node_modules/nodemon/bin/nodemon.js --watch 'src/**/*.ts' --exec node ./node_modules/ts-node/dist/bin.js -r tsconfig-paths/register app.ts"
+    "start": "node ./node_modules/nodemon/bin/nodemon.js --watch 'src/**/*.ts' --exec node ./node_modules/ts-node/dist/bin.js -r tsconfig-paths/register app.ts",
+    "test": "jest --forceExit --coverage --verbose --detectOpenHandles",
+    "tslint": "tslint --project tsconfig.json"
   },
   "dependencies": {
     "bytebuffer": "^5.0.1",
@@ -13,10 +15,14 @@
     "uint64be": "^2.0.2"
   },
   "devDependencies": {
+    "@types/jest": "^23.3.13",
     "@types/node": "^10.12.18",
+    "jest": "^23.6.0",
     "nodemon": "^1.18.9",
+    "ts-jest": "^23.10.5",
     "ts-node": "^7.0.1",
     "tsconfig-paths": "^3.7.0",
+    "tsconfig-paths-jest": "^0.0.1",
     "typescript": "^3.2.2"
   }
 }

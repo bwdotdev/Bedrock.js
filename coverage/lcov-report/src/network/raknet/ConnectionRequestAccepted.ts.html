@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/network/raknet/ConnectionRequestAccepted.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="..\..\..\prettify.css" />
+    <link rel="stylesheet" href="..\..\..\base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(..\..\..\sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="..\..\..\index.html">All files</a> / <a href="index.html">src/network/raknet</a> ConnectionRequestAccepted.ts
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">28.57% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>4/14</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/2</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/2</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">28.57% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>4/14</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import Protocol from '@/network/raknet/Protocol'
+import { Address, AddressFamily } from '@/utils'
+import EncapsulatedPacket from './EncapsulatedPacket'
+&nbsp;
+export default class ConnectionRequestAccepted extends EncapsulatedPacket {
+&nbsp;
+  public address: Address
+  public systemAddresses: Address[]
+  public pingTime: number
+  public pongTime: number
+&nbsp;
+<span class="fstat-no" title="function not covered" >  constructor(</span>address: Address, pingTime: number, pongTime: number) {
+<span class="cstat-no" title="statement not covered" >    super(Protocol.CONNECTION_REQUEST_ACCEPTED)</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    this.address = address</span>
+<span class="cstat-no" title="statement not covered" >    this.systemAddresses = [</span>
+      { ip: '127.0.0.0', port: 0, family: AddressFamily.IPV4 },
+    ]
+<span class="cstat-no" title="statement not covered" >    this.pingTime = pingTime</span>
+<span class="cstat-no" title="statement not covered" >    this.pongTime = pongTime</span>
+  }
+&nbsp;
+  protected <span class="fstat-no" title="function not covered" >encodeBody</span>() {
+<span class="cstat-no" title="statement not covered" >    this.getStream()</span>
+      .writeAddress(this.address)
+      .writeShort(0)
+&nbsp;
+    const addressFiller: Address = <span class="cstat-no" title="statement not covered" >{ ip: '0.0.0.0', port: 0, family: AddressFamily.IPV4 }</span>
+<span class="cstat-no" title="statement not covered" >    for(let i = 0; i &lt; 20; i++) {</span>
+<span class="cstat-no" title="statement not covered" >      this.getStream().writeAddress(this.systemAddresses[i] || addressFiller)</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    this.getStream()</span>
+      .writeLong(this.pingTime)
+      .writeLong(this.pongTime)
+  }
+&nbsp;
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sun Jan 20 2019 12:52:40 GMT+0000 (Greenwich Mean Time)
+</div>
+</div>
+<script src="..\..\..\prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="..\..\..\sorter.js"></script>
+</body>
+</html>

@@ -42,6 +42,8 @@ export default class Packet {
     this.stream.writeByte(this.id)
   }
 
-  protected encodeBody() { }
+  protected encodeBody() {
+    return
+  }
 
 }

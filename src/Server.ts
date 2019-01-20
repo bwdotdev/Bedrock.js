@@ -46,7 +46,11 @@ export default class Server extends EventEmitter {
     this.logger = new Logger('Server')
 
     this.startListeners()
-    this.socket.bind(this.port, this.ip)
+    this.socket.bind(this.port, this.ip, () => { /* */ })
+  }
+
+  public close() {
+    this.socket.close()
   }
 
   public getName() {
