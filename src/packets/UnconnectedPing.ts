@@ -1,6 +1,6 @@
-import Packet from "@/Packet";
-import { BinaryStream } from "@/utils";
-import Protocol from "@/Protocol";
+import Packet from "@/Packet"
+import { BinaryStream } from "@/utils"
+import Protocol from "@/packets/Protocol"
 
 export default class UnconnectedPing extends Packet {
 

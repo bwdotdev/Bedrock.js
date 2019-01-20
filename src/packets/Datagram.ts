@@ -1,5 +1,5 @@
 import Packet from "@/Packet";
-import Protocol from "@/Protocol";
+import Protocol from "@/packets/Protocol";
 import EncapsulatedPacket from "./EncapsulatedPacket";
 import { BinaryStream } from "@/utils";
 import BitFlag from "@/utils/BitFlag";
