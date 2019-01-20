@@ -126,7 +126,7 @@ export default class Client {
 
   private tick() {
     const time = Date.now()
-    if((this.lastUpdate + Client.TICK_INTERVAL) < time) {
+    if((this.lastUpdate + 10000) < time) {
       this.disconnect('Connection timed out')
 
       return
