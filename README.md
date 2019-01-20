@@ -11,6 +11,8 @@ If you'd like to compare Node.js to Java, take a look at [this article](https://
 \
 People love to praise the speed of Node.js. The data comes in and the answers come out like lightning. Node.js doesn’t mess around with setting up separate threads with all of the locking headaches. There’s no overhead to slow down anything. You write simple code and Node.js takes the right step as quickly as possible.
 
+Another major perk to using Node.js is the ability to create [Node Addons](https://nodejs.org/api/addons.html). These will allow us to write certain parts of the software (such as the RakNet implementation) in C++, which is obviously a far more performant language.
+
 #### Credits
 Without the following repositories as a constant reference, this project would not be possible. Thank you to each and every person who has contributed to any of them, you're all amazing :heart:.
 

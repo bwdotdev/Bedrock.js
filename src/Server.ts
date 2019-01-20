@@ -61,7 +61,34 @@ export default class Server extends EventEmitter {
     return Math.floor(Date.now()) - this.startTime
   }
 
-  startListeners() {
+  public hasClient(address: Address) {
+    return !!this.getClient(address)
+  }
+
+  public getClient(address: Address) {
+    return this.clients.find(client => client.address.ip === address.ip && client.address.port === address.port)
+  }
+
+  public addClient(client: Client) {
+    this.clients.push(client)
+  }
+
+  public removeClient(client: Client) {
+    const index = this.clients.findIndex(c => c.address.ip === client.address.ip && c.address.port === client.address.port)
+    if(index === -1) return
+
+    this.clients.splice(index, 1)
+  }
+
+  public send(stream: BinaryStream, to: Address) {
+    this.socket.send(
+      stream.buffer,
+      to.port,
+      to.ip
+    )
+  }
+
+  private startListeners() {
     this.socket.on("message", (message: Buffer, recipient: dgram.RemoteInfo) => {
       if (!message.length) return
 
@@ -88,7 +115,7 @@ export default class Server extends EventEmitter {
     })
   }
 
-  handleOnMessage(stream: BinaryStream, recipient: Address) {
+  private handleOnMessage(stream: BinaryStream, recipient: Address) {
     const packetId = stream.buffer[0]
     if (this.hasClient(recipient)) {
       if ((packetId & BitFlag.Valid) === 0) {
@@ -113,30 +140,4 @@ export default class Server extends EventEmitter {
     }
   }
 
-  hasClient(address: Address) {
-    return !!this.getClient(address)
-  }
-
-  getClient(address: Address) {
-    return this.clients.find(client => client.address.ip === address.ip && client.address.port === address.port)
-  }
-
-  addClient(client: Client) {
-    this.clients.push(client)
-  }
-
-  removeClient(client: Client) {
-    const index = this.clients.findIndex(c => c.address.ip === client.address.ip && c.address.port === client.address.port)
-    if(index === -1) return
-
-    this.clients.splice(index, 1)
-  }
-
-  send(stream: BinaryStream, to: Address) {
-    this.socket.send(
-      stream.buffer,
-      to.port,
-      to.ip
-    )
-  }
 }
