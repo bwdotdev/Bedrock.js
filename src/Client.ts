@@ -18,8 +18,6 @@ export default class Client {
 
   public address: Address
 
-  private lastUpdate: number = Date.now()
-
   public windowStart: number = 0
   public windowEnd: number = 2048
   public mtuSize: number
@@ -40,6 +38,8 @@ export default class Client {
   public recoveryQueue: Map<number, Datagram> = new Map()
 
   public tickInterval: NodeJS.Timeout
+
+  private lastUpdate: number = Date.now()
 
   private server: Server
 
