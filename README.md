@@ -6,7 +6,7 @@ It seems to be a popular opinion that JavaScript isn't performant enough to be u
 
 A lot of these opinions are immediately backed up by _"...because JavaScript isn't compiled"_, which, in the case of running a Node.js server, is simply incorrect. When you start the server, [Google's V8](https://v8.dev) not only compiles the entire codebase, it also uses it's dictionary of fast, pre-compiled code fragments to optimise your code - [Read More](https://hashnode.com/post/is-nodejs-compiled-or-interpreted-language-cijylh0ed00keco5318e1em8p/answer/cijyq66au00kvvm53iky4den4).
 
-If you'd like to compare Node.js to Java, take a look at [this article](https://hashnode.com/post/is-nodejs-compiled-or-interpreted-language-cijylh0ed00keco5318e1em8p/answer/cijyq66au00kvvm53iky4den4), it does a great job at explaining the pros of each. But, if you can't bring yourself to read the article, here's a small snippet for you:
+If you'd like to compare Node.js to Java, take a look at [this article](https://www.infoworld.com/article/2883328/node-js/java-vs-nodejs-an-epic-battle-for-developer-mindshare.html), it does a great job at explaining the pros of each. But, if you can't bring yourself to read the article, here's a small snippet for you:
 > Where Node.js wins: Speed\
 \
 People love to praise the speed of Node.js. The data comes in and the answers come out like lightning. Node.js doesn’t mess around with setting up separate threads with all of the locking headaches. There’s no overhead to slow down anything. You write simple code and Node.js takes the right step as quickly as possible.
