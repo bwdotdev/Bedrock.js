@@ -1,6 +1,6 @@
-import Packet from "@/Packet";
-import { BinaryStream } from "@/utils";
-import Protocol from "@/packets/Protocol";
+import Packet from "@/network/Packet"
+import { BinaryStream } from "@/utils"
+import Protocol from "@/network/raknet/Protocol"
 
 export default class OpenConnectionRequestOne extends Packet {
 

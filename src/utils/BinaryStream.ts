@@ -1,5 +1,5 @@
 import { Address, Round, AddressFamily } from '@/utils'
-import { Magic } from '@/packets/Protocol'
+import { Magic } from '@/network/raknet/Protocol'
 import Logger from '@/utils/Logger'
 
 export default class BinaryStream {
