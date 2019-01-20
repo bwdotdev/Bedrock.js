@@ -1,5 +1,5 @@
 import AcknowledgePacket from "./AcknowledgePacket"
-import Protocol from "@/Protocol"
+import Protocol from "@/packets/Protocol"
 import { BinaryStream } from "@/utils"
 
 export default class NAK extends AcknowledgePacket {

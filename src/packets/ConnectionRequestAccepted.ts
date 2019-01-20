@@ -1,4 +1,4 @@
-import Protocol from "@/Protocol";
+import Protocol from "@/packets/Protocol";
 import { Address, AddressFamily } from "@/utils";
 import EncapsulatedPacket from "./EncapsulatedPacket";
 

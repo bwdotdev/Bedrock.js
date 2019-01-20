@@ -1,7 +1,7 @@
 import Packet from "@/Packet"
 import { BinaryStream } from "@/utils"
 import Reliability from "@/Reliability"
-import Protocol from "@/Protocol";
+import Protocol from "@/packets/Protocol"
 
 export default class EncapsulatedPacket extends Packet {
 

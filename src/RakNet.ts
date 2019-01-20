@@ -1,6 +1,6 @@
 import Server from "@/Server"
 import { BinaryStream, Address } from "@/utils"
-import Protocol from "@/Protocol"
+import Protocol from "@/packets/Protocol"
 import UnconnectedPing from "@/packets/UnconnectedPing"
 import UnconnectedPong from "@/packets/UnconnectedPong"
 import IncompatibleProtocol from "@/packets/IncompatibleProtocol"

@@ -1,5 +1,5 @@
 import { BinaryStream } from '@/utils'
-import Protocol from './Protocol'
+import Protocol from '@/packets/Protocol'
 
 export default class Packet {
 

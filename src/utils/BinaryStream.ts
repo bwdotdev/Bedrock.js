@@ -1,5 +1,5 @@
 import { Address, Round, AddressFamily } from '@/utils'
-import { Magic } from '@/Protocol'
+import { Magic } from '@/packets/Protocol'
 import Logger from '@/utils/Logger'
 
 export default class BinaryStream {

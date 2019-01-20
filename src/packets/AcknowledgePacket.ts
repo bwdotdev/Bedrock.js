@@ -1,5 +1,5 @@
 import Packet from "@/Packet"
-import Protocol from "@/Protocol"
+import Protocol from "@/packets/Protocol"
 import { BinaryStream } from "@/utils"
 
 export default class AcknowledgePacket extends Packet {
