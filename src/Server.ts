@@ -9,6 +9,7 @@ import BitFlag from '@/utils/BitFlag'
 import NAK from '@/network/raknet/NAK'
 import ACK from '@/network/raknet/ACK'
 import Logger from '@/utils/Logger'
+import { ServerOptions } from '@/interfaces'
 
 export default class Server extends EventEmitter {
 
@@ -26,13 +27,13 @@ export default class Server extends EventEmitter {
 
   private logger: Logger
 
-  constructor(ip: string = "127.0.0.1", port: number = 19132) {
+  constructor(options: ServerOptions) {
     super()
 
-    this.ip = ip
-    this.port = port
-    this.name = 'Sky Wars'
-    this.maxPlayers = 50
+    this.ip = options.address || '0.0.0.0'
+    this.port = options.port || 19132
+    this.name = options.name
+    this.maxPlayers = options.maxPlayers || 50
 
     this.startTime = Math.floor(Date.now())
 

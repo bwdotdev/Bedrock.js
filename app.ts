@@ -1,3 +1,5 @@
-import Server from "./src/Server";
+import Server from "./src/Server"
 
-const s = new Server('0.0.0.0', 19132)
+new Server({
+  name: 'Bedrock.js Test Server',
+})
