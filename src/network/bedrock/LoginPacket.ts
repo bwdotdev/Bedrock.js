@@ -1,8 +1,8 @@
-import EncapsulatedPacket from "@/packets/EncapsulatedPacket"
-import Packets from "@/game-packets/Protocol"
+import EncapsulatedPacket from "@/network/raknet/EncapsulatedPacket"
+import Packet from "@/network/bedrock/Protocol"
 
 export default class LoginPacket extends EncapsulatedPacket {
     constructor() {
-        super(Packets.LOGIN_PACKET)
+        super(Packet.LOGIN_PACKET)
     }
 }
