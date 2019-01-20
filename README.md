@@ -1,4 +1,4 @@
-# Bedrock.js
+# Bedrock.js [![Build Status](https://travis-ci.com/BradW/Bedrock.js.svg?branch=master)](https://travis-ci.com/BradW/Bedrock.js)
 (aiming to be) A blazingly fast multiplayer server for Minecraft Bedrock written in JavaScript / TypeScript
 
 ##### _"But JavaScript is so slow"_
