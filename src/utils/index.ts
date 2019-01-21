@@ -1,4 +1,4 @@
-import Address, { AddressFamily } from './Address'
+import Address, { AddressFamily } from '@/interfaces/Address'
 import BinaryStream from './BinaryStream'
 import Round, { RoundMode } from './Round'
 
