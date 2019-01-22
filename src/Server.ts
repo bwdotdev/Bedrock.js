@@ -24,11 +24,11 @@ export default class Server extends EventEmitter {
 
   private clients: Client[]
 
-  private socket: dgram.Socket
+  private socket!: dgram.Socket
 
   private logger: Logger
 
-  constructor(options: ServerOptions) {
+  constructor(options: ServerOptions, bind: boolean = true) {
     super()
 
     this.ip = options.address || '0.0.0.0'
@@ -42,12 +42,14 @@ export default class Server extends EventEmitter {
 
     this.clients = []
 
-    this.socket = dgram.createSocket('udp4')
-
     this.logger = new Logger('Server')
 
-    this.startListeners()
-    this.socket.bind(this.port, this.ip, () => { /* */ })
+    if(bind) {
+      this.socket = dgram.createSocket('udp4')
+
+      this.startListeners()
+      if(bind) this.socket.bind(this.port, this.ip, () => { /* */ })
+    }
   }
 
   public close() {

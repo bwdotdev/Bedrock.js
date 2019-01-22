@@ -2,35 +2,28 @@ import Server from '@/Server'
 import assert from 'assert'
 
 describe('Server', () => {
+  const name = 'B.js Tests'
+
   describe('#getName', () => {
-    const name = 'B.js Tests'
     it(`should equal '${name}'`, () => {
-      const s = new Server({ name })
+      const s = new Server({ name }, false)
 
       assert.equal(s.getName(), name)
-
-      s.close()
     })
   })
   describe('#getMaxPlayers', () => {
     const maxPlayers = 5
-    const name = 'B.js Tests'
     it(`should equal '${maxPlayers}'`, () => {
-      const s = new Server({ name, maxPlayers })
+      const s = new Server({ name, maxPlayers }, false)
 
       assert.equal(s.getMaxPlayers(), maxPlayers)
-
-      s.close()
     })
   })
   describe('#getTime', () => {
-    const name = 'B.js Tests'
-    it(`should be a number'`, () => {
-      const s = new Server({ name })
+    it('should be a number', () => {
+      const s = new Server({ name }, false)
 
       assert.equal(typeof s.getTime(), 'number')
-
-      s.close()
     })
   })
 })

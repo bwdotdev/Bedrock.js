@@ -13,7 +13,7 @@ import Logger from '@/utils/Logger'
 
 export default class Client {
 
-  private static TICK_INTERVAL = 500 // Milliseconds
+  private static TICK_INTERVAL = 100 // Milliseconds
 
   public id: number | null = null
 
