@@ -23,4 +23,14 @@ describe('Server', () => {
       s.close()
     })
   })
+  describe('#getTime', () => {
+    const name = 'B.js Tests'
+    it(`should be a number'`, () => {
+      const s = new Server({ name })
+
+      assert.equal(typeof s.getTime(), 'number')
+
+      s.close()
+    })
+  })
 })
