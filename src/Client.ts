@@ -1,3 +1,4 @@
+import Address from '@/interfaces/Address'
 import Packet from '@/network/Packet'
 import ACK from '@/network/raknet/ACK'
 import ConnectionRequest from '@/network/raknet/ConnectionRequest'
@@ -7,7 +8,7 @@ import EncapsulatedPacket from '@/network/raknet/EncapsulatedPacket'
 import NAK from '@/network/raknet/NAK'
 import Protocol from '@/network/raknet/Protocol'
 import Server from '@/Server'
-import { Address, BinaryStream } from '@/utils'
+import { BinaryStream } from '@/utils'
 import Logger from '@/utils/Logger'
 
 export default class Client {

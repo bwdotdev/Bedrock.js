@@ -3,11 +3,12 @@ import { EventEmitter } from 'events'
 
 import Client from '@/Client'
 import { ServerOptions } from '@/interfaces'
+import Address from '@/interfaces/Address'
 import RakNet from '@/network/RakNet'
 import ACK from '@/network/raknet/ACK'
 import Datagram from '@/network/raknet/Datagram'
 import NAK from '@/network/raknet/NAK'
-import { Address, BinaryStream } from '@/utils'
+import { BinaryStream } from '@/utils'
 import BitFlag from '@/utils/BitFlag'
 import Logger from '@/utils/Logger'
 

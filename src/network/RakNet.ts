@@ -1,4 +1,5 @@
 import Client from '@/Client'
+import Address from '@/interfaces/Address'
 import IncompatibleProtocol from '@/network/raknet/IncompatibleProtocol'
 import OpenConnectionReplyOne from '@/network/raknet/OpenConnectionReplyOne'
 import OpenConnectionReplyTwo from '@/network/raknet/OpenConnectionReplyTwo'
@@ -8,7 +9,7 @@ import Protocol from '@/network/raknet/Protocol'
 import UnconnectedPing from '@/network/raknet/UnconnectedPing'
 import UnconnectedPong from '@/network/raknet/UnconnectedPong'
 import Server from '@/Server'
-import { Address, BinaryStream } from '@/utils'
+import { BinaryStream } from '@/utils'
 import Logger from '@/utils/Logger'
 
 export default class RakNet {
