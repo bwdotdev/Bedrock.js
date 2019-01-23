@@ -131,9 +131,13 @@ export default class EncapsulatedPacket extends Packet {
       stream.writeInt(this.splitIndex)
     }
 
+    console.log('gon encode', stream.length)
     const packetStream = this.encode()
 
-    return stream.append(packetStream)
+    stream.append(packetStream)
+    console.log(stream.length, stream.buffer)
+
+    return stream
   }
 
 }

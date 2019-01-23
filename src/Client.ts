@@ -10,6 +10,7 @@ import Protocol from '@/network/raknet/Protocol'
 import Server from '@/Server'
 import { BinaryStream } from '@/utils'
 import Logger from '@/utils/Logger'
+import Reliability from './network/raknet/Reliability';
 
 export default class Client {
 
@@ -74,9 +75,6 @@ export default class Client {
 
     const diff = datagram.sequenceNumber - this.lastSequenceNumber
 
-    this.logger.debug('Datagram diff:', diff)
-    this.logger.debug(datagram.sequenceNumber, this.lastSequenceNumber)
-
     if(this.NAKQueue.ids.length) {
       const index = this.NAKQueue.ids.findIndex(i => i === datagram.sequenceNumber)
       if(index !== -1) this.NAKQueue.ids.splice(index, 1)
@@ -104,7 +102,7 @@ export default class Client {
     if(packet instanceof EncapsulatedPacket) return this.handleEncapsulatedPacket(packet)
 
     if(packet instanceof ACK) {
-      this.logger.debug('Got ACK:', packet.ids, '- Recovery queue:', this.recoveryQueue)
+      this.logger.debug('Got ACK:', packet.ids)
       packet.ids.forEach(id => {
         const pk = this.recoveryQueue.get(id)
         if(pk) {
@@ -114,7 +112,7 @@ export default class Client {
     }
 
     if(packet instanceof NAK) {
-      this.logger.debug('Got NAK:', packet.ids, '- Recovery queue:', this.recoveryQueue)
+      this.logger.debug('Got NAK:', packet.ids)
       packet.ids.forEach(id => {
         const pk = this.recoveryQueue.get(id)
         if(pk) {
@@ -212,6 +210,9 @@ export default class Client {
         splitIndex++
       }
     } else {
+      if(packet.isReliable()) {
+        packet.messageIndex = this.messageIndex++
+      }
       this.addToQueue(packet, immediate)
     }
   }
@@ -255,12 +256,15 @@ export default class Client {
   }
 
   private handleConnectionRequest(packet: EncapsulatedPacket) {
+    this.logger.debug('Got connection request')
     const request = ConnectionRequest.fromEncapsulated(packet)
 
     this.id = request.clientId
 
     const reply = new ConnectionRequestAccepted(this.address, request.sendPingTime, this.server.getTime())
-    this.addToQueue(reply)
+    reply.reliability = Reliability.Unreliable
+    reply.orderChannel = 0
+    this.queueEncapsulatedPacket(reply, true)
   }
 
 }
