@@ -14,7 +14,7 @@ export default class ConnectionRequestAccepted extends EncapsulatedPacket {
 
     this.address = address
     this.systemAddresses = [
-      { ip: '127.0.0.0', port: 0, family: AddressFamily.IPV4 },
+      { ip: '127.0.0.1', port: 0, family: AddressFamily.IPV4 },
     ]
     this.pingTime = pingTime
     this.pongTime = pongTime

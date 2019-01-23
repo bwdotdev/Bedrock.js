@@ -109,7 +109,13 @@ export default class EncapsulatedPacket extends Packet {
 
   public toBinary() {
     const stream = new BinaryStream()
-    stream.writeByte((this.reliability << 5) | (this.hasSplit ? 0x10 : 0))
+
+    let flags = this.reliability << 5
+    if(this.hasSplit) {
+      flags = flags | 0x10
+    }
+
+    stream.writeByte(flags)
     stream.writeShort(stream.length << 3)
 
     if (this.isReliable()) {
