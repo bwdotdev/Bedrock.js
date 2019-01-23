@@ -169,7 +169,7 @@ export default class Client {
   }
 
   private queueEncapsulatedPacket(packet: EncapsulatedPacket, immediate: boolean = false) {
-    console.log('Q EP:', packet.getStream().buffer.length, immediate)
+    this.logger.debug('Q EP:', packet.getStream().buffer.length, immediate)
     if(packet.isReliable()) {
       packet.messageIndex = this.messageIndex++
     }
@@ -219,7 +219,7 @@ export default class Client {
   }
 
   private addToQueue(packet: EncapsulatedPacket, immediate: boolean = false) {
-    console.log('ADDIND TO QUEUE', packet.getStream().buffer.length, immediate)
+    this.logger.debug('ADDIND TO QUEUE', packet.getStream().buffer.length, immediate)
     const length = this.packetQueue.packets.length
     if((length + packet.getStream().length) > (this.mtuSize - 36)) {
       this.sendPacketQueue()
@@ -238,7 +238,7 @@ export default class Client {
 
   private sendPacketQueue() {
     this.packetQueue.sequenceNumber = this.sequenceNumber++
-    console.log('sn', this.packetQueue.sequenceNumber)
+    this.logger.debug('sn', this.packetQueue.sequenceNumber)
     this.recoveryQueue.set(this.packetQueue.sequenceNumber, this.packetQueue)
 
     this.logger.debug('Sending to server:', this.packetQueue.getStream().buffer.length)
