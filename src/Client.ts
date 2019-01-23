@@ -10,7 +10,7 @@ import Protocol from '@/network/raknet/Protocol'
 import Server from '@/Server'
 import { BinaryStream } from '@/utils'
 import Logger from '@/utils/Logger'
-import Reliability from './network/raknet/Reliability';
+import Reliability from './network/raknet/Reliability'
 
 export default class Client {
 
