@@ -10,10 +10,10 @@ import Protocol from '@/network/raknet/Protocol'
 import Server from '@/Server'
 import { BinaryStream } from '@/utils'
 import Logger from '@/utils/Logger'
+import ConnectedPing from './network/raknet/ConnectedPing'
+import ConnectedPong from './network/raknet/ConnectedPong'
 import NewIncomingConnection from './network/raknet/NewIncomingConnection'
 import Reliability from './network/raknet/Reliability'
-import ConnectedPing from './network/raknet/ConnectedPing';
-import ConnectedPong from './network/raknet/ConnectedPong';
 
 export default class Client {
 
