@@ -7,7 +7,7 @@ export default class SetTimePacket extends EncapsulatedPacket {
   public time: number
 
   constructor(stream: BinaryStream) {
-    super(Packet.SET_TIME_PACKET, stream)
+    super(Packet.SET_TIME, stream)
 
     this.time = this.getStream().readInt()
   }

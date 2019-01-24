@@ -1,5 +1,8 @@
-import Protocol from '@/network/raknet/Protocol'
+import BedrockProtocol from '@/network/bedrock/Protocol'
+import RakNetProtocol from '@/network/raknet/Protocol'
 import { BinaryStream } from '@/utils'
+
+type Protocol = BedrockProtocol | RakNetProtocol
 
 export default class Packet {
 

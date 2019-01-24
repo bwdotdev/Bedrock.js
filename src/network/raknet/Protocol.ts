@@ -37,6 +37,8 @@ enum Protocol {
   DATA_PACKET_D = 0x8d,
   DATA_PACKET_E = 0x8e,
   DATA_PACKET_F = 0x8f,
+
+  GAME_PACKET_WRAPPER = 0xFE, // 254
 }
 
 export const Magic = '\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78'

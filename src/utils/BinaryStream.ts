@@ -413,6 +413,10 @@ export default class BinaryStream {
     return this
   }
 
+  public readString() {
+    return this.read(this.readUnsignedVarInt())
+  }
+
   public readMagic(): Buffer {
     return this.buffer.slice(this.offset, this.increaseOffset(16, true))
   }

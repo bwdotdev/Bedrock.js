@@ -1,3 +1,5 @@
+import zlib from 'zlib'
+
 import Address from '@/interfaces/Address'
 import Packet from '@/network/Packet'
 import ACK from '@/network/raknet/ACK'
@@ -12,8 +14,10 @@ import { BinaryStream } from '@/utils'
 import Logger from '@/utils/Logger'
 import ConnectedPing from './network/raknet/ConnectedPing'
 import ConnectedPong from './network/raknet/ConnectedPong'
+import GamePacketWrapper from './network/raknet/GamePacketWrapper'
 import NewIncomingConnection from './network/raknet/NewIncomingConnection'
 import Reliability from './network/raknet/Reliability'
+import Player from './Player'
 
 export default class Client {
 
@@ -49,6 +53,8 @@ export default class Client {
   private server: Server
 
   private logger: Logger
+
+  private player: Player | null = null
 
   constructor(address: Address, mtuSize: number, server: Server) {
     this.address = address
@@ -236,6 +242,13 @@ export default class Client {
     }
   }
 
+  private sendPing(reliability: Reliability = Reliability.Unreliable) {
+    const packet = new ConnectedPing(null, this.server.getTime())
+    packet.reliability = reliability
+
+    this.queueEncapsulatedPacket(packet, true)
+  }
+
   private sendPacketQueue() {
     this.packetQueue.sequenceNumber = this.sequenceNumber++
     this.recoveryQueue.set(this.packetQueue.sequenceNumber, this.packetQueue)
@@ -250,16 +263,22 @@ export default class Client {
         this.handleConnectionRequest(ConnectionRequest.fromEncapsulated(packet))
         break
       case Protocol.NEW_INCOMING_CONNECTION:
-        this.handleClientHandshake(NewIncomingConnection.fromEncapsulated(packet))
+        this.handleNewIncomingConnection(NewIncomingConnection.fromEncapsulated(packet))
         break
       case Protocol.CONNECTED_PING:
         this.handleConnectedPing(ConnectedPing.fromEncapsulated(packet))
+        break
+      case Protocol.CONNECTED_PONG:
+        this.handleConnectedPong(ConnectedPong.fromEncapsulated(packet))
+        break
+      case Protocol.GAME_PACKET_WRAPPER:
+        this.handleGamePacket(GamePacketWrapper.fromEncapsulated(packet))
         break
       case Protocol.DISCONNECTION_NOTIFICATION:
         this.disconnect('Client disconnected')
         break
       default:
-        this.logger.error('Game packet not yet implemented:', packet.getId())
+        this.logger.error('Packet not yet implemented:', packet.getId())
         this.logger.error(packet.getStream().buffer)
     }
   }
@@ -273,8 +292,10 @@ export default class Client {
     this.queueEncapsulatedPacket(reply, true)
   }
 
-  private handleClientHandshake(packet: NewIncomingConnection) {
+  private handleNewIncomingConnection(packet: NewIncomingConnection) {
     // TODO: Add state and set it to connected here
+    this.player = new Player(this)
+
     this.sendPing()
   }
 
@@ -285,11 +306,19 @@ export default class Client {
     this.queueEncapsulatedPacket(pong)
   }
 
-  private sendPing(reliability: Reliability = Reliability.Unreliable) {
-    const packet = new ConnectedPing(null, this.server.getTime())
-    packet.reliability = reliability
+  private handleConnectedPong(packet: ConnectedPong) {
+    // k
+  }
 
-    this.queueEncapsulatedPacket(packet, true)
+  private handleGamePacket(packet: GamePacketWrapper) {
+    const payload = zlib.unzipSync(packet.getStream().buffer.slice(1))
+    const pStream = new BinaryStream(payload)
+
+    while(!pStream.feof()) {
+      const stream = new BinaryStream(pStream.readString())
+
+      if(this.player) this.player.handlePacket(stream)
+    }
   }
 
 }
