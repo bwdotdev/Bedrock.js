@@ -383,7 +383,7 @@ export default class BinaryStream {
         family = AddressFamily.IPV4
         ip = []
         for (let i = 0; i < 4; i++) {
-          ip.push(this.readByte() & 0xff)
+          ip.push(~this.readByte() & 0xff)
         }
         ip = ip.join('.')
         port = this.readShort()

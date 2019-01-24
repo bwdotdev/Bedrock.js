@@ -10,6 +10,7 @@ import Protocol from '@/network/raknet/Protocol'
 import Server from '@/Server'
 import { BinaryStream } from '@/utils'
 import Logger from '@/utils/Logger'
+import NewIncomingConnection from './network/raknet/NewIncomingConnection'
 import Reliability from './network/raknet/Reliability'
 
 export default class Client {
@@ -244,7 +245,10 @@ export default class Client {
   private handleEncapsulatedPacket(packet: EncapsulatedPacket) {
     switch(packet.getId()) {
       case Protocol.CONNECTION_REQUEST:
-        this.handleConnectionRequest(packet)
+        this.handleConnectionRequest(ConnectionRequest.fromEncapsulated(packet))
+        break
+      case Protocol.NEW_INCOMING_CONNECTION:
+        this.handleClientHandshake(NewIncomingConnection.fromEncapsulated(packet))
         break
       case Protocol.DISCONNECTION_NOTIFICATION:
         this.disconnect('Client disconnected')
@@ -255,15 +259,18 @@ export default class Client {
     }
   }
 
-  private handleConnectionRequest(packet: EncapsulatedPacket) {
-    const request = ConnectionRequest.fromEncapsulated(packet)
+  private handleConnectionRequest(packet: ConnectionRequest) {
+    this.id = packet.clientId
 
-    this.id = request.clientId
-
-    const reply = new ConnectionRequestAccepted(this.address, request.sendPingTime, this.server.getTime())
+    const reply = new ConnectionRequestAccepted(this.address, packet.sendPingTime, this.server.getTime())
     reply.reliability = Reliability.Unreliable
     reply.orderChannel = 0
     this.queueEncapsulatedPacket(reply, true)
+  }
+
+  private handleClientHandshake(packet: NewIncomingConnection) {
+    // TODO: Add state and set it to connected here
+    // this.sendPing()
   }
 
 }
