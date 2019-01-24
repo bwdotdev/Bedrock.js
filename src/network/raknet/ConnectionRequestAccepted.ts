@@ -26,7 +26,7 @@ export default class ConnectionRequestAccepted extends EncapsulatedPacket {
       .writeShort(0)
 
     const addressFiller: Address = { ip: '0.0.0.0', port: 0, family: AddressFamily.IPV4 }
-    for(let i = 0; i < 20; i++) {
+    for(let i = 0; i < 10; i++) {
       this.getStream().writeAddress(this.systemAddresses[i] || addressFiller)
     }
 
