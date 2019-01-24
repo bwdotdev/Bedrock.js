@@ -1,6 +1,6 @@
 import Packet from '@/network/bedrock/Protocol'
 import EncapsulatedPacket from '@/network/raknet/EncapsulatedPacket'
-import { BinaryStream } from '@/utils';
+import { BinaryStream } from '@/utils'
 
 export default class SetTimePacket extends EncapsulatedPacket {
 
@@ -9,7 +9,7 @@ export default class SetTimePacket extends EncapsulatedPacket {
   constructor(stream: BinaryStream) {
     super(Packet.SET_TIME_PACKET, stream)
 
-    this.time = this.getStream().readInt();
+    this.time = this.getStream().readInt()
   }
 
   protected encodeBody() {
