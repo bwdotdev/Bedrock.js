@@ -5,7 +5,7 @@ enum Packets {
   CLIENT_TO_SERVER_HANDSHAKE_PACKET = 0x04,
   DISCONNECT_PACKET = 0x05,
 
-  SET_TIME_PACKET = 0x0a
+  SET_TIME_PACKET = 0x0a,
 }
 
 export default Packets
