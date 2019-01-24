@@ -115,8 +115,10 @@ export default class EncapsulatedPacket extends Packet {
       flags = flags | 0x10
     }
 
+    const packetStream = this.encode()
+
     stream.writeByte(flags)
-    stream.writeShort(stream.length << 3)
+    stream.writeShort(packetStream.length << 3)
 
     if (this.isReliable()) {
       stream.writeLTriad(this.messageIndex)
@@ -136,8 +138,6 @@ export default class EncapsulatedPacket extends Packet {
       stream.writeShort(this.splitId)
       stream.writeInt(this.splitIndex)
     }
-
-    const packetStream = this.encode()
 
     stream.append(packetStream)
 

@@ -81,7 +81,6 @@ export default class Client {
 
       if(diff !== 1) {
         for(let i = this.lastSequenceNumber + 1; i < datagram.sequenceNumber; i++) {
-          this.logger.debug('Adding to NAK queue:', i)
           this.NAKQueue.ids.push(i)
         }
       }
@@ -169,7 +168,6 @@ export default class Client {
   }
 
   private queueEncapsulatedPacket(packet: EncapsulatedPacket, immediate: boolean = false) {
-    this.logger.debug('Q EP:', packet.getStream().buffer.length, immediate)
     if(packet.isReliable()) {
       packet.messageIndex = this.messageIndex++
     }
@@ -219,7 +217,6 @@ export default class Client {
   }
 
   private addToQueue(packet: EncapsulatedPacket, immediate: boolean = false) {
-    this.logger.debug('ADDIND TO QUEUE', packet.getStream().buffer.length, immediate)
     const length = this.packetQueue.packets.length
     if((length + packet.getStream().length) > (this.mtuSize - 36)) {
       this.sendPacketQueue()
@@ -238,12 +235,9 @@ export default class Client {
 
   private sendPacketQueue() {
     this.packetQueue.sequenceNumber = this.sequenceNumber++
-    this.logger.debug('sn', this.packetQueue.sequenceNumber)
     this.recoveryQueue.set(this.packetQueue.sequenceNumber, this.packetQueue)
 
-    this.logger.debug('Sending to server:', this.packetQueue.getStream().buffer.length)
     this.server.send(this.packetQueue.encode(), this.address)
-    this.logger.debug(this.packetQueue.getStream().buffer.length)
     this.packetQueue.reset()
   }
 
@@ -262,7 +256,6 @@ export default class Client {
   }
 
   private handleConnectionRequest(packet: EncapsulatedPacket) {
-    this.logger.debug('Got connection request')
     const request = ConnectionRequest.fromEncapsulated(packet)
 
     this.id = request.clientId

@@ -135,14 +135,11 @@ export default class Server extends EventEmitter {
       if(!client) return
 
       if (packetId & BitFlag.ACK) {
-        this.logger.debug('ACK:', packetId)
         client.handlePacket(new ACK(stream))
       } else if (packetId & BitFlag.NAK) {
-        this.logger.debug('NAK:', packetId)
         client.handlePacket(new NAK(stream))
       } else {
         const datagram = Datagram.fromBinary(stream)
-        this.logger.debug('Datagram:', packetId, '- Packets:', datagram.packets.length)
 
         client.handlePackets(datagram)
       }
