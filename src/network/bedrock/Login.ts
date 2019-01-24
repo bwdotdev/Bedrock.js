@@ -1,13 +1,13 @@
 import Protocol from '@/network/bedrock/Protocol'
 import { BinaryStream } from '@/utils'
 import { decodeJWT } from '@/utils/JWT'
-import Packet from '../Packet'
+import GamePacket from './GamePacket'
 
 export interface LoginChainData {
   chain: string[],
 }
 
-export default class Login extends Packet {
+export default class Login extends GamePacket {
 
   public protocol: number
 

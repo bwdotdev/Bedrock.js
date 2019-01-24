@@ -1,6 +1,8 @@
 import { BinaryStream, Logger } from '@/utils'
 import Client from './Client'
+import GamePacket from './network/bedrock/GamePacket'
 import Login from './network/bedrock/Login'
+import PlayStatus, { PlayStatusIndicator } from './network/bedrock/PlayStatus'
 import Protocol from './network/bedrock/Protocol'
 
 export default class Player {
@@ -29,8 +31,13 @@ export default class Player {
     }
   }
 
+  private sendPacket(packet: GamePacket) {
+    // TODO
+  }
+
   private handleLogin(packet: Login) {
     this.logger.debug('Got login. Username:', packet.username)
+    const playStatus = new PlayStatus(PlayStatusIndicator.Okay)
   }
 
 }
