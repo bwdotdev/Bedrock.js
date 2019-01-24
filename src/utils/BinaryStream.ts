@@ -396,7 +396,7 @@ export default class BinaryStream {
     this.writeByte(address.family)
     switch (address.family) {
       case AddressFamily.IPV4:
-        address.ip.split('.', 4).forEach(b => this.writeByte(parseInt(b, 10) & 0xff))
+        address.ip.split('.', 4).forEach(b => this.writeByte(~parseInt(b, 10) & 0xff))
         this.writeShort(address.port)
         break
       case AddressFamily.IPV6:
