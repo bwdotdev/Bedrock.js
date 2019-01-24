@@ -12,6 +12,8 @@ import { BinaryStream } from '@/utils'
 import Logger from '@/utils/Logger'
 import NewIncomingConnection from './network/raknet/NewIncomingConnection'
 import Reliability from './network/raknet/Reliability'
+import ConnectedPing from './network/raknet/ConnectedPing';
+import ConnectedPong from './network/raknet/ConnectedPong';
 
 export default class Client {
 
@@ -250,6 +252,9 @@ export default class Client {
       case Protocol.NEW_INCOMING_CONNECTION:
         this.handleClientHandshake(NewIncomingConnection.fromEncapsulated(packet))
         break
+      case Protocol.CONNECTED_PING:
+        this.handleConnectedPing(ConnectedPing.fromEncapsulated(packet))
+        break
       case Protocol.DISCONNECTION_NOTIFICATION:
         this.disconnect('Client disconnected')
         break
@@ -270,7 +275,21 @@ export default class Client {
 
   private handleClientHandshake(packet: NewIncomingConnection) {
     // TODO: Add state and set it to connected here
-    // this.sendPing()
+    this.sendPing()
+  }
+
+  private handleConnectedPing(packet: ConnectedPing) {
+    const pong = new ConnectedPong(null, packet.sendPingTime, this.server.getTime())
+    pong.reliability = Reliability.Unreliable
+
+    this.queueEncapsulatedPacket(pong)
+  }
+
+  private sendPing(reliability: Reliability = Reliability.Unreliable) {
+    const packet = new ConnectedPing(null, this.server.getTime())
+    packet.reliability = reliability
+
+    this.queueEncapsulatedPacket(packet, true)
   }
 
 }
