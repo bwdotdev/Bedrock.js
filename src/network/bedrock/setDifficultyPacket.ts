@@ -13,6 +13,6 @@ export default class setDifficultyPacket extends EncapsulatedPacket {
   }
 
   protected encodeBody() {
-    return this.getStream().writeUnsignedVarInt(this.difficulty)
+    this.getStream().writeUnsignedVarInt(this.difficulty)
   }
 }
