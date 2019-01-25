@@ -11,6 +11,14 @@ export default class Player {
 
   private logger: Logger
 
+  private username: string | null = ''
+  private displayName: string | null = ''
+  private clientUUID: string | null = null
+  private xuid: string | null = null
+  private publicKey: string | null = null
+
+  private protocol: number = 0
+
   constructor(client: Client) {
     this.client = client
     this.logger = new Logger('Player')
@@ -31,13 +39,26 @@ export default class Player {
     }
   }
 
-  private sendPacket(packet: GamePacket) {
-    // TODO
+  private sendPacket(packet: GamePacket, immediate = false, needACK = false) {
+    this.client.queueEncapsulatedPacket(packet, immediate)
+  }
+
+  private sendPlayStatus(status: PlayStatusIndicator, immediate = false) {
+    const packet = new PlayStatus(status)
+    this.sendPacket(packet, immediate)
   }
 
   private handleLogin(packet: Login) {
     this.logger.debug('Got login. Username:', packet.username)
-    const playStatus = new PlayStatus(PlayStatusIndicator.Okay)
+
+    this.username = this.displayName = packet.username
+    this.clientUUID = packet.clientUUID
+    this.xuid = packet.xuid
+    this.publicKey = packet.publicKey
+
+    this.protocol = packet.protocol
+
+    this.sendPlayStatus(PlayStatusIndicator.Okay, true)
   }
 
 }

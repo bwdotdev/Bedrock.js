@@ -131,52 +131,7 @@ export default class Client {
     }
   }
 
-  private tick() {
-    const time = Date.now()
-    if((this.lastUpdate + 10000) < time) {
-      this.disconnect('Connection timed out')
-
-      return
-    }
-
-    if(this.ACKQueue.ids.length) {
-      this.server.send(this.ACKQueue.encode(), this.address)
-      this.ACKQueue.reset()
-    }
-
-    if(this.NAKQueue.ids.length) {
-      this.server.send(this.NAKQueue.encode(), this.address)
-      this.NAKQueue.reset()
-    }
-
-    if(this.datagramQueue.length) {
-      const limit = 16
-      let i = 0
-      this.datagramQueue.forEach(async (datagram, index) => {
-        if(i > limit) return
-
-        // this.recoveryQueue.set(datagram.sequenceNumber, datagram)
-        this.server.send(datagram.encode(), this.address)
-        this.datagramQueue.splice(index, 1)
-
-        i++
-      })
-    }
-
-    if(this.recoveryQueue.size) {
-      // TODO: Check time
-      this.recoveryQueue.forEach((pk, seq) => {
-        this.datagramQueue.push(pk)
-        this.recoveryQueue.delete(seq)
-      })
-    }
-
-    if(this.packetQueue.packets.length) {
-      this.sendPacketQueue()
-    }
-  }
-
-  private queueEncapsulatedPacket(packet: EncapsulatedPacket, immediate: boolean = false) {
+  public queueEncapsulatedPacket(packet: EncapsulatedPacket, immediate: boolean = false) {
     if(packet.isReliable()) {
       packet.messageIndex = this.messageIndex++
     }
@@ -222,6 +177,51 @@ export default class Client {
         packet.messageIndex = this.messageIndex++
       }
       this.addToQueue(packet, immediate)
+    }
+  }
+
+  private tick() {
+    const time = Date.now()
+    if((this.lastUpdate + 10000) < time) {
+      this.disconnect('Connection timed out')
+
+      return
+    }
+
+    if(this.ACKQueue.ids.length) {
+      this.server.send(this.ACKQueue.encode(), this.address)
+      this.ACKQueue.reset()
+    }
+
+    if(this.NAKQueue.ids.length) {
+      this.server.send(this.NAKQueue.encode(), this.address)
+      this.NAKQueue.reset()
+    }
+
+    if(this.datagramQueue.length) {
+      const limit = 16
+      let i = 0
+      this.datagramQueue.forEach(async (datagram, index) => {
+        if(i > limit) return
+
+        // this.recoveryQueue.set(datagram.sequenceNumber, datagram)
+        this.server.send(datagram.encode(), this.address)
+        this.datagramQueue.splice(index, 1)
+
+        i++
+      })
+    }
+
+    if(this.recoveryQueue.size) {
+      // TODO: Check time
+      this.recoveryQueue.forEach((pk, seq) => {
+        this.datagramQueue.push(pk)
+        this.recoveryQueue.delete(seq)
+      })
+    }
+
+    if(this.packetQueue.packets.length) {
+      this.sendPacketQueue()
     }
   }
 

@@ -1,5 +1,6 @@
 import Packet from '@/network/Packet'
+import EncapsulatedPacket from '../raknet/EncapsulatedPacket'
 
-export default class GamePacket extends Packet {
+export default class GamePacket extends EncapsulatedPacket {
 
 }

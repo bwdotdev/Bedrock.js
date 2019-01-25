@@ -11,11 +11,13 @@
   "dependencies": {
     "bytebuffer": "^5.0.1",
     "chalk": "^2.4.2",
+    "math3d": "^0.2.2",
     "tslint": "^5.12.1",
     "uint64be": "^2.0.2"
   },
   "devDependencies": {
     "@types/jest": "^23.3.13",
+    "@types/math3d": "^0.2.3",
     "@types/node": "^10.12.18",
     "jest": "^23.6.0",
     "nodemon": "^1.18.9",
