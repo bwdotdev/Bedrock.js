@@ -7,6 +7,8 @@ enum Protocol {
   START_GAME = 0x0b, // 11
 
   SET_TIME = 0x0a,
+
+  SET_DIFFICULTY = 0x3c,
 }
 
 export default Protocol
