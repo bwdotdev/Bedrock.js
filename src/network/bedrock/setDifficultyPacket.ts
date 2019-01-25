@@ -1,8 +1,8 @@
 import Packet from '@/network/bedrock/Protocol'
 import EncapsulatedPacket from '@/network/raknet/EncapsulatedPacket'
-import { BinaryStream } from '@/utils';
+import { BinaryStream } from '@/utils'
 
-export default class setDifficultyPacket extends EncapsulatedPacket {
+export default class SetDifficultyPacket extends EncapsulatedPacket {
 
   private difficulty: number
 
