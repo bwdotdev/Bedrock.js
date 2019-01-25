@@ -4,6 +4,7 @@ import GamePacket from './network/bedrock/GamePacket'
 import Login from './network/bedrock/Login'
 import PlayStatus, { PlayStatusIndicator } from './network/bedrock/PlayStatus'
 import Protocol from './network/bedrock/Protocol'
+import StartGame from './network/bedrock/StartGame'
 
 export default class Player {
 
@@ -59,6 +60,10 @@ export default class Player {
     this.protocol = packet.protocol
 
     this.sendPlayStatus(PlayStatusIndicator.Okay, true)
+
+    const pk = new StartGame()
+    pk.worldName = 'some world'
+    this.sendPacket(pk)
   }
 
 }

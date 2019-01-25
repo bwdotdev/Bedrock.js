@@ -1,7 +1,9 @@
+import { Gamerule, GameruleType } from '@/interfaces'
 import Address, { AddressFamily } from '@/interfaces/Address'
 import { Magic } from '@/network/raknet/Protocol'
 import { Round } from '@/utils'
 import Logger from '@/utils/Logger'
+import { Vector3 } from 'math3d'
 
 export default class BinaryStream {
 
@@ -423,6 +425,38 @@ export default class BinaryStream {
 
   public writeMagic() {
     this.append(Buffer.from(Magic, 'binary'))
+    return this
+  }
+
+  public writeVector3Float(v3: Vector3) {
+    this.writeFloat(v3.x)
+    this.writeFloat(v3.y)
+    this.writeFloat(v3.z)
+    return this
+  }
+
+  public writeVector3VarInt(v3: Vector3) {
+    this.writeVarInt(v3.x)
+    this.writeVarInt(v3.y)
+    this.writeVarInt(v3.z)
+    return this
+  }
+
+  public writeGamerule(rule: Gamerule) {
+    this.writeString(rule.name)
+    this.writeByte(rule.type)
+
+    if(rule.type === GameruleType.Boolean && typeof rule.value === 'boolean') this.writeBool(rule.value)
+    else if(rule.type === GameruleType.Integer && typeof rule.value === 'number') this.writeUnsignedVarInt(rule.value)
+    else if(rule.type === GameruleType.Float && typeof rule.value === 'number') this.writeFloat(rule.value)
+    else this.logger.error('Invalid gamerule type or value. Type:', rule.type, '- Value:', rule.value)
+
+    return this
+  }
+
+  public writeGamerules(rules: Gamerule[]) {
+    rules.forEach(this.writeGamerule)
+
     return this
   }
 
