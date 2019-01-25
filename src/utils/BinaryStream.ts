@@ -416,7 +416,7 @@ export default class BinaryStream {
   }
 
   public readString() {
-    return this.read(this.readUnsignedVarInt())
+    return this.read(this.readUnsignedVarInt()).toString()
   }
 
   public readMagic(): Buffer {

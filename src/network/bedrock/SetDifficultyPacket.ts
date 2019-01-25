@@ -4,7 +4,7 @@ import { BinaryStream } from '@/utils'
 
 export default class SetDifficultyPacket extends EncapsulatedPacket {
 
-  private difficulty: number
+  public difficulty: number
 
   constructor(stream: BinaryStream) {
    super(Packet.SET_DIFFICULTY)

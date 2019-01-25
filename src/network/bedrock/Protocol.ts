@@ -8,7 +8,11 @@ enum Protocol {
 
   SET_TIME = 0x0a,
 
+  SET_HEALTH = 0x2a,
+
   SET_DIFFICULTY = 0x3c,
+
+  SET_TITLE = 0x58,
 }
 
 export default Protocol
