@@ -7,6 +7,10 @@ import { Vector3 } from 'math3d'
 
 export default class BinaryStream {
 
+  public static from(val: string) {
+    return new BinaryStream(Buffer.from(val))
+  }
+
   public buffer: Buffer
   public offset: number
 
@@ -24,11 +28,9 @@ export default class BinaryStream {
     }
   }
 
-  /*
-   *******************************
-   * Stream Management Functions *
-   *******************************
-  */
+  public get length(): number {
+    return this.buffer.length
+  }
 
   public read(len: number): Buffer {
     return this.buffer.slice(this.offset, this.increaseOffset(len, true))
@@ -69,10 +71,6 @@ export default class BinaryStream {
 
   public getBuffer(): Buffer {
     return this.buffer
-  }
-
-  public get length(): number {
-    return this.buffer.length
   }
 
   /*
