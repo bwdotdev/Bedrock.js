@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/98445d9e441e45d983aaea24e0790b8c)](https://app.codacy.com/app/HypertextPP/Bedrock.js?utm_source=github.com&utm_medium=referral&utm_content=BradW/Bedrock.js&utm_campaign=Badge_Grade_Dashboard)
 # Bedrock.js [![Build Status](https://travis-ci.com/BradW/Bedrock.js.svg?branch=master)](https://travis-ci.com/BradW/Bedrock.js)
 (aiming to be) A blazingly fast multiplayer server for Minecraft Bedrock written in JavaScript / TypeScript
 
