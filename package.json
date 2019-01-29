@@ -1,10 +1,11 @@
 {
   "name": "Bedrock.js",
   "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
+  "main": "app.ts",
+  "license": "GPL-3.0",
   "scripts": {
-    "start": "node ./node_modules/nodemon/bin/nodemon.js --watch 'src/**/*.ts' --exec node ./node_modules/ts-node/dist/bin.js -r tsconfig-paths/register app.ts",
+    "start": "node ./node_modules/ts-node/dist/bin.js -r tsconfig-paths/register app.ts",
+    "start:mon": "node ./node_modules/nodemon/bin/nodemon.js --watch 'src/**/*.ts' --exec node ./node_modules/ts-node/dist/bin.js -r tsconfig-paths/register app.ts",
     "test": "jest --forceExit --coverage --verbose --detectOpenHandles",
     "tslint": "tslint --project tsconfig.json"
   },

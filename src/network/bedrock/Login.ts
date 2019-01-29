@@ -27,7 +27,14 @@ export default class Login extends GamePacket {
 
     this.protocol = this.getStream().readInt()
 
-    const loginStream = BinaryStream.from(this.getStream().readString())
+    console.log(this.protocol)
+    console.log(this.getStream().readUnsignedVarInt())
+    process.exit()
+
+    const str = this.getStream().readString()
+    const loginStream = BinaryStream.from(str)
+    console.log(str)
+    console.log(loginStream)
     const rawChainData = loginStream.read(loginStream.readLInt())
     this.chainData = JSON.parse(rawChainData.toString())
 
