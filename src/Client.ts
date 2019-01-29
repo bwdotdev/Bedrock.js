@@ -1,6 +1,7 @@
 import zlib from 'zlib'
 
 import Address from '@/interfaces/Address'
+import Bedrock from '@/network/bedrock/Protocol'
 import Packet from '@/network/Packet'
 import ACK from '@/network/raknet/ACK'
 import ConnectionRequest from '@/network/raknet/ConnectionRequest'
@@ -12,6 +13,10 @@ import Protocol from '@/network/raknet/Protocol'
 import Server from '@/Server'
 import { BinaryStream } from '@/utils'
 import Logger from '@/utils/Logger'
+import GamePacket from './network/bedrock/GamePacket'
+import Login from './network/bedrock/Login'
+import PlayStatus, { PlayStatusIndicator } from './network/bedrock/PlayStatus'
+import StartGame from './network/bedrock/StartGame'
 import ConnectedPing from './network/raknet/ConnectedPing'
 import ConnectedPong from './network/raknet/ConnectedPong'
 import GamePacketWrapper from './network/raknet/GamePacketWrapper'
@@ -48,13 +53,15 @@ export default class Client {
 
   public tickInterval: NodeJS.Timeout
 
+  public protocol: number = 0
+
   private lastUpdate: number = Date.now()
 
   private server: Server
 
   private logger: Logger
 
-  private player: Player | null = null
+  private player!: Player
 
   constructor(address: Address, mtuSize: number, server: Server) {
     this.address = address
@@ -257,6 +264,15 @@ export default class Client {
     this.packetQueue.reset()
   }
 
+  private sendPacket(packet: GamePacket, immediate = false, needACK = false) {
+    this.queueEncapsulatedPacket(packet, immediate)
+  }
+
+  private sendPlayStatus(status: PlayStatusIndicator, immediate = false) {
+    const packet = new PlayStatus(status)
+    this.sendPacket(packet, immediate)
+  }
+
   private handleEncapsulatedPacket(packet: EncapsulatedPacket) {
     switch(packet.getId()) {
       case Protocol.CONNECTION_REQUEST:
@@ -317,8 +333,32 @@ export default class Client {
     while(!pStream.feof()) {
       const stream = new BinaryStream(pStream.readString())
 
-      if(this.player) this.player.handlePacket(stream)
+      switch(stream.buffer[0]) {
+        case Bedrock.LOGIN:
+          this.handleLogin(new Login(stream))
+          break
+        default:
+          this.logger.error('Game packet not yet implemented:', stream.buffer[0])
+          this.logger.error(stream.buffer)
+      }
     }
+  }
+
+  private handleLogin(packet: Login) {
+    this.logger.debug('Got login. Username:', packet.username)
+
+    this.player.username = this.player.displayName = packet.username
+    this.player.clientUUID = packet.clientUUID
+    this.player.xuid = packet.xuid
+    this.player.publicKey = packet.publicKey
+
+    this.protocol = packet.protocol
+
+    this.sendPlayStatus(PlayStatusIndicator.Okay, true)
+
+    const pk = new StartGame()
+    pk.worldName = 'some world'
+    this.sendPacket(pk)
   }
 
 }
