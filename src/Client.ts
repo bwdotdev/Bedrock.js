@@ -13,6 +13,7 @@ import Protocol from '@/network/raknet/Protocol'
 import Server from '@/Server'
 import { BinaryStream } from '@/utils'
 import Logger from '@/utils/Logger'
+import AvailableEntityIdentifiers from './network/bedrock/AvailableEntityIdentifiers'
 import GamePacket from './network/bedrock/GamePacket'
 import Login from './network/bedrock/Login'
 import PlayStatus, { PlayStatusIndicator } from './network/bedrock/PlayStatus'
@@ -354,11 +355,16 @@ export default class Client {
 
     this.protocol = packet.protocol
 
-    this.sendPlayStatus(PlayStatusIndicator.Okay, true)
+    this.sendPlayStatus(PlayStatusIndicator.Okay)
+    this.sendStartGame()
+  }
 
-    const pk = new StartGame()
-    pk.worldName = 'some world'
-    this.sendPacket(pk)
+  private sendStartGame() {
+    const packet = new StartGame()
+    packet.worldName = this.server.getName()
+    this.sendPacket(packet)
+
+    this.sendPacket(new AvailableEntityIdentifiers())
   }
 
 }

@@ -13,6 +13,11 @@
       true,
       "ignore-same-line"
     ],
+    "indent": [
+      true,
+      "spaces",
+      2
+    ],
     "interface-name": [
       true,
       "never-prefix"
