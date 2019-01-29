@@ -293,7 +293,7 @@ export default class BinaryStream {
   public readUnsignedVarInt(): number {
     let value = 0
 
-    for (let i = 0; i <= 35; i += 7) {
+    for (let i = 0; i <= 28; i += 7) {
       const b = this.readByte()
       value |= ((b & 0x7f) << i)
 
@@ -414,7 +414,7 @@ export default class BinaryStream {
   }
 
   public readString() {
-    return this.read(this.readUnsignedVarInt()).toString()
+    return this.read(this.readUnsignedVarInt())
   }
 
   public readMagic(): Buffer {

@@ -315,7 +315,7 @@ export default class Client {
     const pStream = new BinaryStream(payload)
 
     while(!pStream.feof()) {
-      const stream = BinaryStream.from(pStream.readString())
+      const stream = new BinaryStream(pStream.readString())
 
       if(this.player) this.player.handlePacket(stream)
     }

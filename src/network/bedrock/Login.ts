@@ -11,7 +11,7 @@ export default class Login extends GamePacket {
 
   public protocol: number
 
-  public chainData: LoginChainData
+  public chainData: LoginChainData = {chain: []}
   public clientData: any
 
   public username: string | null = null
@@ -27,14 +27,9 @@ export default class Login extends GamePacket {
 
     this.protocol = this.getStream().readInt()
 
-    console.log(this.protocol)
-    console.log(this.getStream().readUnsignedVarInt())
-    process.exit()
-
     const str = this.getStream().readString()
-    const loginStream = BinaryStream.from(str)
-    console.log(str)
-    console.log(loginStream)
+    const loginStream = new BinaryStream(str)
+    if(!loginStream.length) return
     const rawChainData = loginStream.read(loginStream.readLInt())
     this.chainData = JSON.parse(rawChainData.toString())
 
