@@ -1,7 +1,8 @@
 import { Logger } from '@/utils'
 import Client from './Client'
+import Entity from './entity/Entity'
 
-export default class Player {
+export default class Player extends Entity {
 
   public username: string | null = null
   public displayName: string | null = null
@@ -14,6 +15,8 @@ export default class Player {
   private logger: Logger
 
   constructor(client: Client) {
+    super()
+
     this.client = client
     this.logger = new Logger('Player')
   }
