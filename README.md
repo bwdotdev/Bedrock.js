@@ -1,7 +1,7 @@
 # Bedrock.js [![Build Status](https://travis-ci.com/BradW/Bedrock.js.svg?branch=master)](https://travis-ci.com/BradW/Bedrock.js) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/98445d9e441e45d983aaea24e0790b8c)](https://app.codacy.com/app/HypertextPP/Bedrock.js?utm_source=github.com&utm_medium=referral&utm_content=BradW/Bedrock.js&utm_campaign=Badge_Grade_Dashboard)
 (aiming to be) A blazingly fast multiplayer server for Minecraft Bedrock written in JavaScript / TypeScript
 
-**_"But JavaScript is so slow"_**
+## _"But JavaScript is so slow"_
 
 It seems to be a popular opinion that JavaScript isn't performant enough to be used as a game server. This project was created in an attempt to disprove that. You see, it's incredibly easy to point fingers at a language and laugh but, when you give it a little more thought, you realise that JavaScript, specifically Node.js, has great potential.
 
@@ -16,12 +16,12 @@ Another major perk to using Node.js is the ability to create [Node Addons](https
 ## Credits
 Without the following repositories as a constant reference, this project would not be possible. Thank you to each and every person who has contributed to any of them, you're all amazing :heart:.
 
-  - NukkitX ([NukkitX/Network](https://github.com/NukkitX/Network), [NukkitX/Nukkit](https://github.com/NukkitX/Nukkit))
-  - PocketNode ([PocketNode/RakNet](https://github.com/PocketNode/RakNet), [PocketNode/PocketNode](https://github.com/PocketNode/PocketNode))
-  - GoMint ([GoMint/jRakNet](https://github.com/GoMint/jRakNet), [GoMint/GoMint](https://github.com/GoMint/GoMint))
-  - PMMP ([pmmp/RakLib](https://github.com/pmmp/RakLib), [pmmp/PocketMine-MP](https://github.com/pmmp/PocketMine-MP))
-  - falkirks ([falkirks/DirtServer](https://github.com/falkirks/DirtServer))
+- NukkitX ([NukkitX/Network](https://github.com/NukkitX/Network), [NukkitX/Nukkit](https://github.com/NukkitX/Nukkit))
+- PocketNode ([PocketNode/RakNet](https://github.com/PocketNode/RakNet), [PocketNode/PocketNode](https://github.com/PocketNode/PocketNode))
+- GoMint ([GoMint/jRakNet](https://github.com/GoMint/jRakNet), [GoMint/GoMint](https://github.com/GoMint/GoMint))
+- PMMP ([pmmp/RakLib](https://github.com/pmmp/RakLib), [pmmp/PocketMine-MP](https://github.com/pmmp/PocketMine-MP))
+- falkirks ([falkirks/DirtServer](https://github.com/falkirks/DirtServer))
 
 ## Links
-  - [Discord](https://discord.gg/W2KZBzC)
-  - [Subscribe to PewDiePie](https://www.youtube.com/subscription_center?add_user=PewDiePie)
+- [Discord](https://discord.gg/W2KZBzC)
+- [Subscribe to PewDiePie](https://www.youtube.com/subscription_center?add_user=PewDiePie)
