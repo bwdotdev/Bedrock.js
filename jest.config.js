@@ -3,23 +3,23 @@ const moduleNameMapper = require("tsconfig-paths-jest")(tsconfig);
 
 module.exports = {
   globals: {
-    'ts-jest': {
-      tsConfig: 'tsconfig.json',
+    "ts-jest": {
+      tsConfig: "tsconfig.json",
     },
   },
   moduleFileExtensions: [
-    'js',
-    'ts',
+    "js",
+    "ts",
   ],
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
+    "^.+\\.(ts|tsx)$": "ts-jest",
   },
   testMatch: [
-    '**/tests/**/*.test.(ts|js)',
+    "**/tests/**/*.test.(ts|js)",
   ],
-  testEnvironment: 'node',
+  testEnvironment: "node",
   moduleNameMapper: {
-    '@/(.*)': '<rootDir>/src/$1',
+    "@/(.*)": "<rootDir>/src/$1",
   },
-  preset: 'ts-jest',
-}
+  preset: "ts-jest",
+};
