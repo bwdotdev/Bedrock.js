@@ -1,9 +1,6 @@
 # Bedrock.js [![Build Status](https://travis-ci.com/BradW/Bedrock.js.svg?branch=master)](https://travis-ci.com/BradW/Bedrock.js) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/98445d9e441e45d983aaea24e0790b8c)](https://app.codacy.com/app/HypertextPP/Bedrock.js?utm_source=github.com&utm_medium=referral&utm_content=BradW/Bedrock.js&utm_campaign=Badge_Grade_Dashboard)
 (aiming to be) A blazingly fast multiplayer server for Minecraft Bedrock written in JavaScript / TypeScript
 
-## :warning: Discontinuation :warning:
-Bedrock.js has been discontinued in favour of [Bedrock.dart](https://github.com/BradW/Bedrock.dart), a Minecraft Bedrock server written in Dart. This project is archived for internal use and therefore will not continue to be worked on.
-
 ## _"But JavaScript is so slow"_
 
 It seems to be a popular opinion that JavaScript isn't performant enough to be used as a game server. This project was created in an attempt to disprove that. You see, it's incredibly easy to point fingers at a language and laugh but, when you give it a little more thought, you realise that JavaScript, specifically Node.js, has great potential.
